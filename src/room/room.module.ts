@@ -7,6 +7,6 @@ import { UserService } from 'src/user/user.service';
 @Module({
   imports: [PrismaModule],
   controllers: [RoomController],
-  providers: [RoomService, UserService]
+  providers: [RoomService, UserService],
 })
 export class RoomModule {}
