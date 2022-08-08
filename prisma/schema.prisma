@@ -14,7 +14,7 @@ model Room {
   id String @id @unique @default(uuid())
 
   name        String  @db.VarChar(50)
-  drawnNumber Int[]
+  drawnNumbers Int[]
   status      Boolean
   ballTime    Int
   useCards    Int
