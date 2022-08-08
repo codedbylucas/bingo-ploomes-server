@@ -18,7 +18,7 @@ export class RoomService {
 
       const data: Prisma.RoomCreateInput = {
         name: createRoomDto.name,
-        drawnNumber: allNumbersDrawn,
+        drawnNumbers: allNumbersDrawn,
         status: true,
         ballTime: createRoomDto.ballTime,
         useCards: createRoomDto.userCards,
@@ -44,10 +44,10 @@ export class RoomService {
     const allNumbersDrawn: number[] = [];
 
     while (allNumbersDrawn.length < 75) {
-      let drawnNumber: number = Math.floor(Math.random() * (76 - 1)) + 1;
+      const drawnNumbers: number = Math.floor(Math.random() * (76 - 1)) + 1;
 
-      if (!allNumbersDrawn.includes(drawnNumber)) {
-        allNumbersDrawn.push(drawnNumber);
+      if (!allNumbersDrawn.includes(drawnNumbers)) {
+        allNumbersDrawn.push(drawnNumbers);
       }
     }
 
