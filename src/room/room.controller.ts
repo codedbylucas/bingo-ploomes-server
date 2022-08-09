@@ -26,15 +26,16 @@ export class RoomController {
   @ApiOperation({
     summary: 'Get a room by its ID',
   })
-  findOne(@Param('id') id: string) {
-    return this.roomService.findOne(id);
+  findSingleRoom(@Param('roomId') id: string) {
+    return this.roomService.findSingleRoom(id);
   }
 
-  @Get(':roomId')
+  @ApiTags('all-rooms')
+  @Get('room')
   @ApiOperation({
     summary: 'Get all running rooms',
   })
-  findAll(@Param('id') id: string) {
-    return this.roomService.findOne(id);
+  findAllRooms() {
+    return this.roomService.findAllRooms();
   }
 }
