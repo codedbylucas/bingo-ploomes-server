@@ -3,7 +3,9 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
+import { serverError } from 'src/utils/server-error.util';
 import { CreateRoomDto } from './dto/create-room.dto';
+import { Room } from './entities/room.entity';
 
 @Injectable()
 export class RoomService {
@@ -12,32 +14,46 @@ export class RoomService {
     private readonly userService: UserService,
   ) {}
 
-  async createRoomAndUserHost(createRoomDto: CreateRoomDto) {
-    try {
-      const allNumbersDrawn = this.createAllNumbersDrawn();
+  async createRoomAndUserHost(createRoomDto: CreateRoomDto): Promise<Room> {
+    const allNumbersDrawn = this.createAllNumbersDrawn();
 
-      const data: Prisma.RoomCreateInput = {
-        name: createRoomDto.name,
-        drawnNumbers: allNumbersDrawn,
-        status: true,
-        ballTime: createRoomDto.ballTime,
-        useCards: createRoomDto.userCards,
-      };
-      const room = await this.prisma.room.create({ data });
+    const data: Prisma.RoomCreateInput = {
+      name: createRoomDto.name,
+      drawnNumbers: allNumbersDrawn,
+      status: true,
+      ballTime: createRoomDto.ballTime,
+      useCards: createRoomDto.userCards,
+    };
 
-      const userHost: CreateUserDto = {
-        nickname: createRoomDto.nickname,
-        roomId: room.id,
-      };
-      const user = await this.userService.createUser(userHost);
+    const room = await this.prisma.room
+      .create({
+        data,
+        select: {
+          id: true,
+          name: true,
+          drawnNumbers: true,
+          status: true,
+          users: true,
+        },
+      })
+      .catch(serverError);
 
-      return {
-        roomId: room.id,
-        userId: user.id,
-      };
-    } catch (error) {
-      return error.response ?? error;
-    }
+    const userHost: CreateUserDto = {
+      nickname: createRoomDto.nickname,
+      roomId: room.id,
+    };
+
+    const user = await this.userService.createUser(userHost);
+
+    const roomAndUser: Room = {
+      id: room.id,
+      name: room.name,
+      drawnNumbers: room.drawnNumbers,
+      status: room.status,
+      users: user,
+    };
+
+    return roomAndUser;
   }
 
   createAllNumbersDrawn(): number[] {

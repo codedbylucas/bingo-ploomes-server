@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateRoomDto } from './dto/create-room.dto';
+import { Room } from './entities/room.entity';
 import { RoomService } from './room.service';
 
 @ApiTags('room')
@@ -9,7 +10,7 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @Post()
-  createRoomAndUserHost(@Body() createRoomDto: CreateRoomDto) {
+  createRoomAndUserHost(@Body() createRoomDto: CreateRoomDto): Promise<Room> {
     return this.roomService.createRoomAndUserHost(createRoomDto);
   }
 
