@@ -18,7 +18,7 @@ export class RoomController {
   @ApiOperation({
     summary: 'Get a room by its ID',
   })
-  findSingleRoom(@Param('roomId') id: string) {
+  findSingleRoom(@Param('roomId') id: string): Promise<Room> {
     return this.roomService.findSingleRoom(id);
   }
 
@@ -26,7 +26,7 @@ export class RoomController {
   @ApiOperation({
     summary: 'Get all running rooms',
   })
-  findAllRooms() {
+  findAllRooms(): Promise<Room[]> {
     return this.roomService.findAllRooms();
   }
 }

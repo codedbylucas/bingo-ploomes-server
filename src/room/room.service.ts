@@ -58,7 +58,6 @@ export class RoomService {
 
     return roomAndUser;
   }
-
   createAllNumbersDrawn(): number[] {
     const allNumbersDrawn: number[] = [];
 
@@ -70,25 +69,6 @@ export class RoomService {
     }
 
     return allNumbersDrawn;
-  }
-
-  async findAllRooms(): Promise<Room[]> {
-    return await this.prisma.room.findMany({
-      select: {
-        id: true,
-        name: true,
-        status: true,
-        ballTime: true,
-        userCards: true,
-        users: {
-          select: {
-            id: true,
-            nickname: true,
-            score: true,
-          },
-        },
-      },
-    });
   }
 
   async findSingleRoom(roomId: string): Promise<Room> {
@@ -114,6 +94,25 @@ export class RoomService {
       .catch(serverError);
 
     return roomWithUsersAndCards;
+  }
+
+  async findAllRooms(): Promise<Room[]> {
+    return await this.prisma.room.findMany({
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        ballTime: true,
+        userCards: true,
+        users: {
+          select: {
+            id: true,
+            nickname: true,
+            score: true,
+          },
+        },
+      },
+    });
   }
 
   async checkIfThereIsARoom(roomId: string): Promise<void> {
