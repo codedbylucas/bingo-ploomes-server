@@ -1,16 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { RoomService } from 'src/room/room.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(forwardRef(() => RoomService))
+    private readonly roomService: RoomService,
+  ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     try {
+      await this.roomService.checkIfThereIsARoom(createUserDto.roomId);
       const data: Prisma.UserCreateInput = {
         nickname: createUserDto.nickname,
         score: 0,
@@ -31,7 +36,7 @@ export class UserService {
         },
       });
     } catch (error) {
-      console.log(error);
+      return error.response ?? error;
     }
   }
 }
