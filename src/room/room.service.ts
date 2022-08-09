@@ -53,4 +53,12 @@ export class RoomService {
 
     return allNumbersDrawn;
   }
+
+  async findAllRooms() {
+    return await this.prisma.room.findMany();
+  }
+
+  async findSingleRoom(roomId: string) {
+    return await this.prisma.room.findUnique({ where: { id: roomId } });
+  }
 }
