@@ -29,7 +29,7 @@ export class RoomService {
         nickname: createRoomDto.nickname,
         roomId: room.id,
       };
-      const user = await this.userService.create(userHost);
+      const user = await this.userService.createUser(userHost);
 
       return {
         roomId: room.id,
