@@ -17,7 +17,7 @@ model Room {
   drawnNumbers Int[]
   status      Boolean
   ballTime    Int
-  useCards    Int
+  userCards    Int
 
   users User[]
 
