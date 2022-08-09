@@ -96,7 +96,9 @@ export class RoomService {
   }
 
   async checkIfThereIsARoom(roomId: string): Promise<void> {
-    const room = await this.prisma.room.findUnique({ where: { id: roomId } });
+    const room = await this.prisma.room
+      .findUnique({ where: { id: roomId } })
+      .catch(serverError);
 
     if (!room) {
       throw new NotFoundException(`Room with ID ${roomId} not found`);
