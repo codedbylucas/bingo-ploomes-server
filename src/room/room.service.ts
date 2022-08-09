@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
@@ -29,23 +29,22 @@ export class RoomService {
         nickname: createRoomDto.nickname,
         roomId: room.id,
       };
-      const user = await this.userService.create(userHost);
+      const user = await this.userService.createUser(userHost);
 
       return {
         roomId: room.id,
         userId: user.id,
       };
     } catch (error) {
-      console.log(error.message)
+      return error.response ?? error;
     }
   }
 
-  createAllNumbersDrawn() {
+  createAllNumbersDrawn(): number[] {
     const allNumbersDrawn: number[] = [];
 
     while (allNumbersDrawn.length < 75) {
       const drawnNumbers: number = Math.floor(Math.random() * (76 - 1)) + 1;
-
       if (!allNumbersDrawn.includes(drawnNumbers)) {
         allNumbersDrawn.push(drawnNumbers);
       }
@@ -60,5 +59,13 @@ export class RoomService {
 
   async findSingleRoom(roomId: string) {
     return await this.prisma.room.findUnique({ where: { id: roomId } });
+  }
+
+  async checkIfThereIsARoom(roomId: string): Promise<void> {
+    const room = await this.prisma.room.findUnique({ where: { id: roomId } });
+
+    if (!room) {
+      throw new NotFoundException(`Room with ID ${roomId} not found`);
+    }
   }
 }
