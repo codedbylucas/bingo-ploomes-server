@@ -74,6 +74,7 @@ export class RoomService {
   }
 
   async findSingleRoom(roomId: string) {
+    await this.checkIfThereIsARoom(roomId);
     const roomWithUsersAndCards = await this.prisma.room
       .findUnique({
         where: { id: roomId },
