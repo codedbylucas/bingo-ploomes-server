@@ -36,7 +36,7 @@ export class RoomService {
         userId: user.id,
       };
     } catch (error) {
-      console.log(error.message);
+      console.log(error.message)
     }
   }
 
