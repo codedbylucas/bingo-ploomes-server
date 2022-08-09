@@ -1,19 +1,10 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
-import { RoomService } from './room.service';
-import { CreateRoomDto } from './dto/create-room.dto';
-import { UpdateRoomDto } from './dto/update-room.dto';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CreateRoomDto } from './dto/create-room.dto';
+import { RoomService } from './room.service';
 
 @ApiTags('room')
-@Controller('room')
+@Controller('/room')
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
@@ -22,7 +13,7 @@ export class RoomController {
     return this.roomService.createRoomAndUserHost(createRoomDto);
   }
 
-  @Get(':roomId')
+  @Get('/:roomId')
   @ApiOperation({
     summary: 'Get a room by its ID',
   })
@@ -30,8 +21,7 @@ export class RoomController {
     return this.roomService.findSingleRoom(id);
   }
 
-  @ApiTags('all-rooms')
-  @Get('room')
+  @Get()
   @ApiOperation({
     summary: 'Get all running rooms',
   })
