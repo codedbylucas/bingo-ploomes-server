@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
+import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { serverError } from 'src/utils/server-error.util';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -15,24 +16,25 @@ export class RoomService {
   ) {}
 
   async createRoomAndUserHost(createRoomDto: CreateRoomDto): Promise<Room> {
-    const allNumbersDrawn = this.createAllNumbersDrawn();
+    const allNumbersDrawn: number[] = this.createAllNumbersDrawn();
 
     const data: Prisma.RoomCreateInput = {
       name: createRoomDto.name,
       drawnNumbers: allNumbersDrawn,
       status: true,
       ballTime: createRoomDto.ballTime,
-      useCards: createRoomDto.userCards,
+      userCards: createRoomDto.userCards,
     };
 
-    const room = await this.prisma.room
+    const room: Room = await this.prisma.room
       .create({
         data,
         select: {
           id: true,
           name: true,
-          drawnNumbers: true,
           status: true,
+          ballTime: true,
+          userCards: true,
           users: true,
         },
       })
@@ -43,14 +45,15 @@ export class RoomService {
       roomId: room.id,
     };
 
-    const user = await this.userService.createUser(userHost);
+    const user: User = await this.userService.createUser(userHost);
 
-    const roomAndUser: Room = {
+    const roomAndUser = {
       id: room.id,
       name: room.name,
-      drawnNumbers: room.drawnNumbers,
       status: room.status,
-      users: user,
+      ballTime: room.ballTime,
+      userCards: room.userCards,
+      users: [user],
     };
 
     return roomAndUser;
@@ -69,18 +72,36 @@ export class RoomService {
     return allNumbersDrawn;
   }
 
-  async findAllRooms() {
-    return await this.prisma.room.findMany();
+  async findAllRooms(): Promise<Room[]> {
+    return await this.prisma.room.findMany({
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        ballTime: true,
+        userCards: true,
+        users: {
+          select: {
+            id: true,
+            nickname: true,
+            score: true,
+          },
+        },
+      },
+    });
   }
 
-  async findSingleRoom(roomId: string) {
+  async findSingleRoom(roomId: string): Promise<Room> {
     await this.checkIfThereIsARoom(roomId);
-    const roomWithUsersAndCards = await this.prisma.room
+    const roomWithUsersAndCards: Room = await this.prisma.room
       .findUnique({
         where: { id: roomId },
         select: {
           id: true,
           name: true,
+          status: true,
+          ballTime: true,
+          userCards: true,
           users: {
             select: {
               id: true,
