@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
+import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from './entities/room.entity';
@@ -97,31 +98,32 @@ export class RoomService {
   }
 
   async findAllRooms(): Promise<Room[]> {
-    return await this.prisma.room.findMany({
-      select: {
-        id: true,
-        name: true,
-        status: true,
-        ballTime: true,
-        userCards: true,
-        users: {
-          select: {
-            id: true,
-            nickname: true,
-            score: true,
+    const rooms: Room[] = await this.prisma.room
+      .findMany({
+        select: {
+          id: true,
+          name: true,
+          status: true,
+          ballTime: true,
+          userCards: true,
+          users: {
+            select: {
+              id: true,
+              nickname: true,
+              score: true,
+            },
           },
         },
-      },
-    });
+      })
+      .catch(serverError);
+    notFoundError(rooms, `rooms`);
+    return rooms;
   }
 
   async checkIfThereIsARoom(roomId: string): Promise<void> {
     const room = await this.prisma.room
       .findUnique({ where: { id: roomId } })
       .catch(serverError);
-
-    if (!room) {
-      throw new NotFoundException(`Room with ID ${roomId} not found`);
-    }
+    notFoundError(room, `room with this id: (${roomId})`);
   }
 }
