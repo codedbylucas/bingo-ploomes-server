@@ -18,8 +18,8 @@ export class CardService {
   async createCard(createCardDto: CreateCardDto): Promise<Card> {
     const data: Prisma.CardCreateInput = {
       numbers: [
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-        21, 22, 23, 24, 25,
+        1, 12, 6, 4, 15, 16, 19, 18, 29, 30, 31, 42, 33, 39, 45, 46, 57, 48, 52,
+        60, 61, 72, 64, 74, 75,
       ],
       user: {
         connect: {
