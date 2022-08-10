@@ -1,4 +1,4 @@
-import { AssembledCard } from 'src/card/entities/types/createCard.type';
+import { AssembledCard } from 'src/card/entities/types/assembled-card.type';
 
 export type UserAndHisCards = {
   id: string;

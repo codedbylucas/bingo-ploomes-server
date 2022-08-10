@@ -1,6 +1,4 @@
-import { User } from 'src/user/entities/user.entity';
-
-export type CreateCard = {
+export type AssembledCard = {
   id: string;
   numbers: {
     b: number[];
@@ -9,5 +7,4 @@ export type CreateCard = {
     g: number[];
     o: number[];
   };
-  user: User;
 };
