@@ -1,19 +1,13 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserService } from 'src/user/user.service';
 import { serverError } from 'src/utils/server-error.util';
 import { CreateCardDto } from './dto/create-card.dto';
 import { Card } from './entities/card.entity';
 
 @Injectable()
 export class CardService {
-  constructor(
-    private readonly prisma: PrismaService,
-
-    // @Inject(forwardRef(() => UserService))
-    // private readonly userService: UserService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async createCard(createCardDto: CreateCardDto): Promise<Card> {
     const data: Prisma.CardCreateInput = {

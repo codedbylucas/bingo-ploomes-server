@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
@@ -13,8 +13,6 @@ import { Room } from './entities/room.entity';
 export class RoomService {
   constructor(
     private readonly prisma: PrismaService,
-
-    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
   ) {}
 
