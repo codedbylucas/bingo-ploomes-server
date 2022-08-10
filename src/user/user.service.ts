@@ -27,17 +27,18 @@ export class UserService {
       },
     };
 
-    return await this.prisma.user
+    const user: User = await this.prisma.user
       .create({
         data,
         select: {
           id: true,
-          roomId: true,
           nickname: true,
           score: true,
         },
       })
       .catch(serverError);
+
+    return user;
   }
 
   async findAllUsers(): Promise<User[]> {
@@ -52,5 +53,27 @@ export class UserService {
       .catch(serverError);
     notFoundError(users, 'users');
     return users;
+  }
+
+  async findSingleUser(userId: string): Promise<User> {
+    await this.checkIfThereIsAnUser(userId);
+    const singleUserData: User = await this.prisma.user
+      .findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          nickname: true,
+          score: true,
+        },
+      })
+      .catch(serverError);
+    return singleUserData;
+  }
+
+  async checkIfThereIsAnUser(userId: string): Promise<void> {
+    const user = await this.prisma.user
+      .findUnique({ where: { id: userId } })
+      .catch(serverError);
+    notFoundError(user, `user with this id: (${userId})`);
   }
 }
