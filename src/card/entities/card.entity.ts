@@ -1,1 +1,4 @@
-export class Card {}
+export class Card {
+  id: string;
+  numbers: number[];
+}
