@@ -15,14 +15,14 @@ export class CardService {
     private readonly userService: UserService,
   ) {}
 
-  async createCard(createCardDto: CreateCardDto) {
+  async createCard(createCardDto: CreateCardDto):Promise<Card> {
     const data: Prisma.CardCreateInput = {
       numbers: {
-        b: [8, 2, 12, 7, 10],
-        i: [29, 23, 20, 17, 22],
-        n: [38, 31, 43, 43, 35],
-        g: [46, 46, 52, 50, 56],
-        o: [64, 71, 68, 66, 68],
+        B: [8, 2, 12, 7, 10],
+        I: [29, 23, 20, 17, 22],
+        N: [38, 31, 43, 43, 35],
+        G: [46, 46, 52, 50, 56],
+        O: [64, 71, 68, 66, 68],
       },
       user: {
         connect: {
