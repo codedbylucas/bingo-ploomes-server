@@ -9,6 +9,7 @@ import { RoomService } from './room.service';
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
+  @ApiOperation({ summary: 'Create a room' })
   @Post()
   createRoomAndUserHost(@Body() createRoomDto: CreateRoomDto): Promise<Room> {
     return this.roomService.createRoomAndUserHost(createRoomDto);
