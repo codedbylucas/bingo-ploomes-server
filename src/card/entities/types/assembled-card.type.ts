@@ -1,10 +1,10 @@
 export type AssembledCard = {
   id: string;
   numbers: {
-    b: number[];
-    i: number[];
-    n: number[];
-    g: number[];
-    o: number[];
+    B: number[];
+    I: number[];
+    N: number[];
+    G: number[];
+    O: number[];
   };
 };
