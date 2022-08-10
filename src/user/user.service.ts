@@ -22,7 +22,7 @@ export class UserService {
     private readonly roomService: RoomService,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<UserAndHisCards> {
+  async createUser(createUserDto: CreateUserDto) {
     await this.roomService.checkIfThereIsARoom(createUserDto.roomId);
     const data: Prisma.UserCreateInput = {
       nickname: createUserDto.nickname,
@@ -45,35 +45,16 @@ export class UserService {
       })
       .catch(serverError);
 
-    const card: Card = await this.cardService.createCard({ userId: user.id });
-    const cardNumbers = this.assembledCard(card.numbers);
+    const card = await this.cardService.createCard({ userId: user.id });
+    console.log(card);
 
-    const userAndHisCards: UserAndHisCards = {
+    const userAndHisCards = {
       id: user.id,
       nickname: user.nickname,
       score: user.score,
-      cards: [{ id: card.id, numbers: cardNumbers }],
+      cards: card,
     };
     return userAndHisCards;
-  }
-
-  assembledCard(cardNumbers: number[]) {
-    const assembledCard = { b: [], i: [], n: [], g: [], o: [] };
-
-    for (let i = 0; i < cardNumbers.length; i++) {
-      if (i < 5) {
-        assembledCard.b.push(cardNumbers[i]);
-      } else if (i >= 5 && i < 10) {
-        assembledCard.i.push(cardNumbers[i]);
-      } else if (i >= 10 && i < 15) {
-        assembledCard.n.push(cardNumbers[i]);
-      } else if (i >= 15 && i < 20) {
-        assembledCard.g.push(cardNumbers[i]);
-      } else if (i >= 20 && i < 25) {
-        assembledCard.o.push(cardNumbers[i]);
-      }
-    }
-    return assembledCard;
   }
 
   async findAllUsers(): Promise<User[]> {
