@@ -13,17 +13,17 @@ datasource db {
 model Room {
   id String @id @unique @default(uuid())
 
-  name        String  @db.VarChar(50)
+  name         String  @db.VarChar(50)
   drawnNumbers Int[]
-  status      Boolean
-  ballTime    Int
+  status       Boolean
+  ballTime     Int
   userCards    Int
 
   users User[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  
+
   @@map("room")
 }
 
