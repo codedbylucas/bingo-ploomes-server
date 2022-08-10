@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RoomService } from 'src/room/room.service';
+import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
@@ -37,5 +38,19 @@ export class UserService {
         },
       })
       .catch(serverError);
+  }
+
+  async findAllUsers(): Promise<User[]> {
+    const users: User[] = await this.prisma.user
+      .findMany({
+        select: {
+          id: true,
+          nickname: true,
+          score: true,
+        },
+      })
+      .catch(serverError);
+    notFoundError(users, 'users');
+    return users;
   }
 }
