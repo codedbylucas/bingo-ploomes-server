@@ -11,6 +11,7 @@ import { User } from './entities/user.entity';
 export class UserService {
   constructor(
     private readonly prisma: PrismaService,
+
     @Inject(forwardRef(() => RoomService))
     private readonly roomService: RoomService,
   ) {}
