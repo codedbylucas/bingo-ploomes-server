@@ -8,10 +8,4 @@ export class CreateCardDto {
     example: 'fa20725e-521f-4964-945d-a6f60f34387f',
   })
   userId: string;
-
-  @ApiProperty({
-    description: 'Number of cards that a user will have',
-    example: 'fa20725e-521f-4964-945d-a6f60f34387f',
-  })
-  userCards: number;
 }
