@@ -6,7 +6,7 @@ import { UserService } from 'src/user/user.service';
 import { serverError } from 'src/utils/server-error.util';
 import { CreateCardDto } from './dto/create-card.dto';
 import { Card } from './entities/card.entity';
-import { CardNumbers } from './entities/types/generated-card.type';
+import { GeneratedCard } from './entities/types/generated-card.type';
 
 @Injectable()
 export class CardService {
@@ -18,16 +18,16 @@ export class CardService {
   ) {}
 
   async createCard(createCardDto: CreateCardDto): Promise<Card[]> {
-    const NumberOfUserCardsInARoom: NumberOfUserCardsInARoom =
+    const numberOfUserCardsInARoom: NumberOfUserCardsInARoom =
       await this.userService.searchAUserAndNumberOfCards(createCardDto.userId);
 
-    const generatedCards: CardNumbers[] = this.cardsGenerator(
-      NumberOfUserCardsInARoom.room.userCards,
+    const generatedCards: GeneratedCard[] = this.cardsGenerator(
+      numberOfUserCardsInARoom.room.userCards,
     );
 
     const cards: Card[] = [];
 
-    for (let i = 0; i < NumberOfUserCardsInARoom.room.userCards; i++) {
+    for (let i = 0; i < numberOfUserCardsInARoom.room.userCards; i++) {
       const data: Prisma.CardCreateInput = {
         numbers: generatedCards[i],
         user: {
@@ -52,10 +52,10 @@ export class CardService {
     return cards;
   }
 
-  cardsGenerator(numberOfUserCards: number): CardNumbers[] {
-    const generatedCards: CardNumbers[] = [];
+  cardsGenerator(numberOfUserCards: number): GeneratedCard[] {
+    const generatedCards: GeneratedCard[] = [];
 
-    let card: CardNumbers = {
+    let card: GeneratedCard = {
       B: [],
       I: [],
       N: [],
