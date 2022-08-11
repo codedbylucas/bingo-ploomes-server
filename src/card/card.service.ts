@@ -49,3 +49,55 @@ export class CardService {
     return cards;
   }
 }
+
+let colB: number[] = [];
+let colI: number[] = [];
+let colN: number[] = [];
+let colG: number[] = [];
+let colO: number[] = [];
+
+let card: unknown = {
+  B: colB,
+  I: colI,
+  N: colN,
+  G: colG,
+  O: colO,
+};
+
+function cardGenerator(
+  colLetter: number[],
+  max: number,
+  min: number,
+): number[] {
+  while (colLetter.length < 5) {
+    const randomNums = Math.floor(Math.random() * (max - min)) + min;
+    if (!colLetter.includes(randomNums)) {
+      colLetter.push(randomNums);
+    }
+  }
+  return colLetter;
+}
+
+function userCard(numberOfUserCards: number): void {
+  for (let i = 0; i < numberOfUserCards; i++) {
+    cardGenerator(colB, 16, 1);
+    cardGenerator(colI, 31, 16);
+    cardGenerator(colN, 46, 31);
+    cardGenerator(colG, 61, 46);
+    cardGenerator(colO, 76, 61);
+    colB = [];
+    colI = [];
+    colN = [];
+    colG = [];
+    colO = [];
+    console.log(card);
+    card = {
+      B: colB,
+      I: colI,
+      N: colN,
+      G: colG,
+      O: colO,
+    };
+  }
+}
+userCard(3);
