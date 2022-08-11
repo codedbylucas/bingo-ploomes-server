@@ -91,15 +91,13 @@ export class UserService {
     return singleUserData;
   }
 
-  async checkIfThereIsAnUser(userId: string) {
+  async checkIfThereIsAnUser(userId: string): Promise<void> {
     const user = await this.prisma.user
       .findUnique({
         where: { id: userId },
       })
       .catch(serverError);
     notFoundError(user, `user with this id: (${userId})`);
-
-    return user;
   }
 
   async searchAUserAndNumberOfCards(
