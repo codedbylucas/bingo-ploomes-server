@@ -22,7 +22,7 @@ export class UserService {
     private readonly roomService: RoomService,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto): Promise<UserAndHisCards> {
     await this.roomService.checkIfThereIsARoom(createUserDto.roomId);
     const data: Prisma.UserCreateInput = {
       nickname: createUserDto.nickname,
@@ -45,15 +45,17 @@ export class UserService {
       })
       .catch(serverError);
 
-    const card = await this.cardService.createCard({ userId: user.id });
-    console.log(card);
+    const card: Card = await this.cardService.createCard({
+      userId: user.id,
+    });
 
-    const userAndHisCards = {
+    const userAndHisCards: UserAndHisCards = {
       id: user.id,
       nickname: user.nickname,
       score: user.score,
-      cards: card,
+      cards: [card],
     };
+    
     return userAndHisCards;
   }
 
