@@ -5,7 +5,7 @@ import { UserService } from 'src/user/user.service';
 import { serverError } from 'src/utils/server-error.util';
 import { CreateCardDto } from './dto/create-card.dto';
 import { Card } from './entities/card.entity';
-import { GeneratedCard } from './entities/types/generated-card.type';
+import { CardNumbers } from './entities/types/generated-card.type';
 
 @Injectable()
 export class CardService {
@@ -17,7 +17,7 @@ export class CardService {
   ) {}
 
   async createCard(createCardDto: CreateCardDto): Promise<Card[]> {
-    const generatedCards: GeneratedCard[] = this.cardsGenerator(
+    const generatedCards: CardNumbers[] = this.cardsGenerator(
       createCardDto.userCards,
     );
 
@@ -48,10 +48,10 @@ export class CardService {
     return cards;
   }
 
-  cardsGenerator(numberOfUserCards: number): GeneratedCard[] {
-    const generatedCards: GeneratedCard[] = [];
+  cardsGenerator(numberOfUserCards: number): CardNumbers[] {
+    const generatedCards: CardNumbers[] = [];
 
-    let card: GeneratedCard = {
+    let card: CardNumbers = {
       B: [],
       I: [],
       N: [],

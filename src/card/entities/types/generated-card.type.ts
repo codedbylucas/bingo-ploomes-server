@@ -1,4 +1,4 @@
-export type GeneratedCard = {
+export type CardNumbers = {
   B: number[];
   I: number[];
   N: number[];
