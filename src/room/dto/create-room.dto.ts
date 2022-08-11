@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString, Length } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsPositive,
+  IsString,
+  Length,
+  Max,
+  Min,
+} from 'class-validator';
 
 export class CreateRoomDto {
   @IsString()
@@ -19,17 +27,23 @@ export class CreateRoomDto {
   nickname: string;
 
   @IsNumber()
+  @IsPositive()
+  @Min(5)
+  @Max(10)
   @IsNotEmpty()
   @ApiProperty({
-    description: 'Time in seconds to show each new ball',
+    description: 'Time in seconds to show each new ball (5 to 10 seconds)',
     example: 10,
   })
   ballTime: number;
 
   @IsNumber()
+  @IsPositive()
+  @Min(1)
+  @Max(3)
   @IsNotEmpty()
   @ApiProperty({
-    description: 'Number of cards that each user can have',
+    description: 'Number of cards that each user can have (1 to 3)',
     example: 3,
   })
   userCards: number;

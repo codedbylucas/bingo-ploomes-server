@@ -25,11 +25,7 @@ export class UserService {
 
   async createUser(createUserDto: CreateUserDto): Promise<UserAndHisCards> {
     await this.roomService.checkIfThereIsARoom(createUserDto.roomId);
-<<<<<<< HEAD
 
-=======
-    
->>>>>>> origin/feet/userCards2
     const data: Prisma.UserCreateInput = {
       nickname: createUserDto.nickname,
       score: 0,
@@ -88,6 +84,7 @@ export class UserService {
           id: true,
           nickname: true,
           score: true,
+          cards: { select: { id: true, numbers: true } },
         },
       })
       .catch(serverError);
