@@ -8,6 +8,7 @@ import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserAndHisCards } from './entities/types/user-and-his-cards.type';
+import { NumberOfUserCardsInARoom } from './entities/types/number-of-user-cards-in-a-room.type';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -49,7 +50,6 @@ export class UserService {
 
     const card: Card[] = await this.cardService.createCard({
       userId: user.id,
-      userCards: room.userCards,
     });
 
     const userAndHisCards: UserAndHisCards = {
@@ -91,10 +91,35 @@ export class UserService {
     return singleUserData;
   }
 
-  async checkIfThereIsAnUser(userId: string): Promise<void> {
+  async checkIfThereIsAnUser(userId: string) {
     const user = await this.prisma.user
-      .findUnique({ where: { id: userId } })
+      .findUnique({
+        where: { id: userId },
+      })
       .catch(serverError);
     notFoundError(user, `user with this id: (${userId})`);
+
+    return user;
+  }
+
+  async searchAUserAndNumberOfCards(
+    userId: string,
+  ): Promise<NumberOfUserCardsInARoom> {
+    const numbersOfCards: NumberOfUserCardsInARoom = await this.prisma.user
+      .findUnique({
+        where: { id: userId },
+        select: {
+          room: {
+            select: {
+              userCards: true,
+            },
+          },
+        },
+      })
+      .catch(serverError);
+
+    notFoundError(numbersOfCards, `user with this id: (${userId})`);
+
+    return numbersOfCards;
   }
 }

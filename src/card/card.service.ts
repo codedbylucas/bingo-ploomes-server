@@ -1,6 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { NumberOfUserCardsInARoom } from 'src/user/entities/types/number-of-user-cards-in-a-room.type';
 import { UserService } from 'src/user/user.service';
 import { serverError } from 'src/utils/server-error.util';
 import { CreateCardDto } from './dto/create-card.dto';
@@ -17,13 +18,16 @@ export class CardService {
   ) {}
 
   async createCard(createCardDto: CreateCardDto): Promise<Card[]> {
+    const NumberOfUserCardsInARoom: NumberOfUserCardsInARoom =
+      await this.userService.searchAUserAndNumberOfCards(createCardDto.userId);
+
     const generatedCards: CardNumbers[] = this.cardsGenerator(
-      createCardDto.userCards,
+      NumberOfUserCardsInARoom.room.userCards,
     );
 
     const cards: Card[] = [];
 
-    for (let i = 0; i < createCardDto.userCards; i++) {
+    for (let i = 0; i < NumberOfUserCardsInARoom.room.userCards; i++) {
       const data: Prisma.CardCreateInput = {
         numbers: generatedCards[i],
         user: {
