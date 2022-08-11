@@ -7,8 +7,8 @@ import { RoomService } from 'src/room/room.service';
 import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserAndHisCards } from './entities/types/user-and-his-cards.type';
 import { NumberOfUserCardsInARoom } from './entities/types/number-of-user-cards-in-a-room.type';
+import { UserAndHisCards } from './entities/types/user-and-his-cards.type';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -24,9 +24,8 @@ export class UserService {
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UserAndHisCards> {
-    const room = await this.roomService.checkIfThereIsARoom(
-      createUserDto.roomId,
-    );
+    await this.roomService.checkIfThereIsARoom(createUserDto.roomId);
+    
     const data: Prisma.UserCreateInput = {
       nickname: createUserDto.nickname,
       score: 0,
