@@ -23,7 +23,9 @@ export class UserService {
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<UserAndHisCards> {
-    await this.roomService.checkIfThereIsARoom(createUserDto.roomId);
+    const room = await this.roomService.checkIfThereIsARoom(
+      createUserDto.roomId,
+    );
     const data: Prisma.UserCreateInput = {
       nickname: createUserDto.nickname,
       score: 0,
@@ -45,17 +47,18 @@ export class UserService {
       })
       .catch(serverError);
 
-    const card: Card = await this.cardService.createCard({
+    const card: Card[] = await this.cardService.createCard({
       userId: user.id,
+      userCards: room.userCards,
     });
 
     const userAndHisCards: UserAndHisCards = {
       id: user.id,
       nickname: user.nickname,
       score: user.score,
-      cards: [card],
+      cards: card,
     };
-    
+
     return userAndHisCards;
   }
 

@@ -122,10 +122,18 @@ export class RoomService {
     return rooms;
   }
 
-  async checkIfThereIsARoom(roomId: string): Promise<void> {
+  async checkIfThereIsARoom(roomId: string) {
     const room = await this.prisma.room
-      .findUnique({ where: { id: roomId } })
+      .findUnique({
+        where: { id: roomId },
+        select: {
+          id: true,
+          userCards: true,
+        },
+      })
       .catch(serverError);
     notFoundError(room, `room with this id: (${roomId})`);
+
+    return room;
   }
 }

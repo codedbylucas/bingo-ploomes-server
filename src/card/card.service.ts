@@ -15,7 +15,7 @@ export class CardService {
     private readonly userService: UserService,
   ) {}
 
-  async createCard(createCardDto: CreateCardDto):Promise<Card> {
+  async createCard(createCardDto: CreateCardDto): Promise<Card[]> {
     const data: Prisma.CardCreateInput = {
       numbers: {
         B: [8, 2, 12, 7, 10],
@@ -31,16 +31,21 @@ export class CardService {
       },
     };
 
-    const card: Card = await this.prisma.card
-      .create({
-        data,
-        select: {
-          id: true,
-          numbers: true,
-        },
-      })
-      .catch(serverError);
+    const cards = [];
+    for (let i = 0; i < createCardDto.userCards; i++) {
+      const card: Card = await this.prisma.card
+        .create({
+          data,
+          select: {
+            id: true,
+            numbers: true,
+          },
+        })
+        .catch(serverError);
 
-    return card;
+      cards.push(card);
+    }
+
+    return cards;
   }
 }
