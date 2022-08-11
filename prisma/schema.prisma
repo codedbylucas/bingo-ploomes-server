@@ -35,6 +35,8 @@ model User {
   room   Room   @relation(fields: [roomId], references: [id])
   roomId String @map("user_id")
 
+  isAdmin Boolean @default(false) @map("is_admin")
+
   cards Card[]
 
   createdAt DateTime @default(now()) @map("created_at")
