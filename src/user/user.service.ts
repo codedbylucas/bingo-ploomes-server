@@ -25,7 +25,7 @@ export class UserService {
 
   async createUser(createUserDto: CreateUserDto): Promise<UserAndHisCards> {
     await this.roomService.checkIfThereIsARoom(createUserDto.roomId);
-    
+
     const data: Prisma.UserCreateInput = {
       nickname: createUserDto.nickname,
       score: 0,
