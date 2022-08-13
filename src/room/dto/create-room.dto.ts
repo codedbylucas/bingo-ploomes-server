@@ -28,8 +28,8 @@ export class CreateRoomDto {
 
   @IsNumber()
   @IsPositive()
-  @Min(5)
-  @Max(10)
+  // @Min(5)
+  // @Max(10)
   @IsNotEmpty()
   @ApiProperty({
     description: 'Time in seconds to show each new ball (5 to 10 seconds)',
@@ -39,8 +39,8 @@ export class CreateRoomDto {
 
   @IsNumber()
   @IsPositive()
-  @Min(1)
-  @Max(3)
+  // @Min(1)
+  // @Max(3)
   @IsNotEmpty()
   @ApiProperty({
     description: 'Number of cards that each user can have (1 to 3)',
