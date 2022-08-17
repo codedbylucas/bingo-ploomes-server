@@ -90,6 +90,12 @@ export class RoomService {
               id: true,
               nickname: true,
               score: true,
+              cards: {
+                select: {
+                  id: true,
+                  numbers: true,
+                },
+              },
             },
           },
         },
