@@ -1,11 +1,9 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { NumberOfUserCardsInARoom } from 'src/user/entities/types/number-of-user-cards-in-a-room.type';
 import { UserService } from 'src/user/user.service';
 import { serverError } from 'src/utils/server-error.util';
 import { Card } from './entities/card.entity';
-import { CreateCard } from './types/create-a-card.type';
 import { GeneratedCard } from './types/generated-card.type';
 
 @Injectable()
@@ -49,7 +47,7 @@ export class CardService {
 
       cards.push(card);
     }
-    
+
     return cards;
   }
 
