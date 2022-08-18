@@ -1,6 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { NumberOfUserCardsInARoom } from 'src/user/entities/types/number-of-user-cards-in-a-room.type';
 import { UserService } from 'src/user/user.service';
 import { serverError } from 'src/utils/server-error.util';
 import { Card } from './entities/card.entity';
@@ -16,10 +17,11 @@ export class CardService {
   ) {}
 
   async createCard(userId: string): Promise<Card[]> {
-    const numberOfUserCardsInARoom =
+    const numberOfUserCardsInARoom: NumberOfUserCardsInARoom =
       await this.userService.searchAUserAndNumberOfCards(userId);
 
-    const numbersOfCards = numberOfUserCardsInARoom.rooms[0].room.userCards;
+    const numbersOfCards: number =
+      numberOfUserCardsInARoom.rooms[0].room.userCards;
 
     const generatedCards: GeneratedCard[] = this.cardsGenerator(numbersOfCards);
 
