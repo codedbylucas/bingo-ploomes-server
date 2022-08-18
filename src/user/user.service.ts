@@ -76,8 +76,7 @@ export class UserService {
   }
 
   async findSingleUser(userId: string): Promise<User> {
-    await this.checkIfThereIsAnUser(userId);
-    const singleUserData: User = await this.prisma.user
+    const singleUser: User = await this.prisma.user
       .findUnique({
         where: { id: userId },
         select: {
@@ -88,7 +87,10 @@ export class UserService {
         },
       })
       .catch(serverError);
-    return singleUserData;
+
+    notFoundError(singleUser, `user with this id: (${userId})`);
+
+    return singleUser;
   }
 
   async checkIfThereIsAnUser(userId: string): Promise<void> {
