@@ -65,5 +65,6 @@ model UserRoom {
 
   createdAt DateTime @default(now()) @map("created_at")
 
+  @@unique([userId, roomId])
   @@map("user_room")
 }
