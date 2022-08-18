@@ -1,13 +1,13 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from './entities/room.entity';
+import { UserToRoom } from './entities/types/connect-user-to-room.type';
 
 @Injectable()
 export class RoomService {
@@ -43,11 +43,13 @@ export class RoomService {
       })
       .catch(serverError);
 
-    const userHost: CreateUserDto = {
-      nickname: createRoomDto.nickname,
-    };
+    // const userHost = {
+    //   nickname: createRoomDto.nickname,
+    // };
 
-    const user: User = await this.userService.createUser(userHost);
+    const user: User = await this.userService.createUser(
+      createRoomDto.nickname,
+    );
 
     const roomAndUser = {
       id: room.id,
@@ -138,5 +140,45 @@ export class RoomService {
       })
       .catch(serverError);
     notFoundError(room, `room with this id: (${roomId})`);
+  }
+
+  async connectUserToRoom(userToRoom: UserToRoom) {
+    const data: Prisma.UserRoomCreateInput = {
+      room: {
+        connect: {
+          id: userToRoom.roomId,
+        },
+      },
+      user: {
+        connect: {
+          id: userToRoom.userId,
+        },
+      },
+    };
+
+    const userConnectedWithTheRoom = await this.prisma.userRoom
+      .create({
+        data,
+        select: {
+          room: {
+            select: {
+              id: true,
+              name: true,
+              ballTime: true,
+              userCards: true,
+            },
+          },
+          user: {
+            select: {
+              id: true,
+              nickname: true,
+              score: true,
+            },
+          },
+        },
+      })
+      .catch(serverError);
+
+    return userConnectedWithTheRoom;
   }
 }

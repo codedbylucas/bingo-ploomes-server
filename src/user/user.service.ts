@@ -2,10 +2,11 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { CardService } from 'src/card/card.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UserToRoom } from 'src/room/entities/types/connect-user-to-room.type';
 import { RoomService } from 'src/room/room.service';
 import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
-import { CreateUserDto } from './dto/create-user.dto';
+import { JoinUserRoom } from './dto/join-user-room.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -20,8 +21,7 @@ export class UserService {
     private readonly roomService: RoomService,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
-    let { nickname } = createUserDto;
+  async createUser(nickname: string): Promise<User> {
     nickname = this.createGuestNicknameForUser(nickname);
 
     const data: Prisma.UserCreateInput = {
@@ -41,6 +41,21 @@ export class UserService {
       .catch(serverError);
 
     return user;
+  }
+
+  async joinUserWithTheRoomAndCreateTheirCards(joinUserRoom: JoinUserRoom) {
+    const user: User = await this.createUser(joinUserRoom.nickname);
+
+    const userToRoom: UserToRoom = {
+      userId: user.id,
+      roomId: joinUserRoom.roomId,
+    };
+
+    const userConnectedWithTheRoom = await this.roomService.connectUserToRoom(
+      userToRoom,
+    );
+
+    return userConnectedWithTheRoom;
   }
 
   async findAllUsers(): Promise<User[]> {
