@@ -7,8 +7,8 @@ import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from './entities/room.entity';
-import { UserToRoomResponse } from './entities/types/user-to-room-response.type';
-import { UserToRoom } from './entities/types/user-to-room.type';
+import { UserToRoomResponse } from '../room-user/types/user-to-room-response.type';
+import { UserToRoom } from '../room-user/types/user-to-room.type';
 
 @Injectable()
 export class RoomService {

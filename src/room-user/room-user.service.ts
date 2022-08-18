@@ -1,8 +1,8 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserToRoomResponse } from 'src/room/entities/types/user-to-room-response.type';
-import { UserToRoom } from 'src/room/entities/types/user-to-room.type';
+import { UserToRoomResponse } from 'src/room-user/types/user-to-room-response.type';
+import { UserToRoom } from 'src/room-user/types/user-to-room.type';
 import { RoomService } from 'src/room/room.service';
 import { UserService } from 'src/user/user.service';
 import { serverError } from 'src/utils/server-error.util';
@@ -15,7 +15,6 @@ export class RoomUserService {
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
 
-    @Inject(forwardRef(() => RoomService))
     private readonly roomService: RoomService,
   ) {}
 
