@@ -1,4 +1,4 @@
-import { UserAndHisCards } from 'src/user/entities/types/user-and-his-cards.type';
+import { UserAndHisCards } from 'src/user/types/user-and-his-cards.type';
 
 export type RoomWithUsersAndCards = {
   room: {

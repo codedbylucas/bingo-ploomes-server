@@ -9,7 +9,7 @@ import { RoomService } from 'src/room/room.service';
 import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
 import { JoinUserRoom } from './dto/join-user-room.dto';
-import { NumberOfUserCardsInARoom } from './entities/types/number-of-user-cards-in-a-room.type';
+import { NumberOfUserCardsInARoom } from './types/number-of-user-cards-in-a-room.type';
 import { User } from './entities/user.entity';
 
 @Injectable()

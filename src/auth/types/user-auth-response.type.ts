@@ -1,10 +1,4 @@
-import { GeneratedCard } from 'src/card/entities/types/generated-card.type';
-import { User } from 'src/user/entities/user.entity';
-
-type cardsOfUser = {
-  id: string;
-  numbers: GeneratedCard;
-};
+import { GeneratedCard } from 'src/card/types/generated-card.type';
 
 export type AuthUserResponse = {
   token: string;
