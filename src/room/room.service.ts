@@ -130,51 +130,6 @@ export class RoomService {
   //   return rooms;
   // }
 
-  async connectUserToRoom(userToRoom: UserToRoom): Promise<UserToRoomResponse> {
-    await this.checkIfThereIsARoom(userToRoom.roomId);
-    await this.userService.checkIfThereIsAnUser(userToRoom.userId);
-
-    const data: Prisma.UserRoomCreateInput = {
-      room: {
-        connect: {
-          id: userToRoom.roomId,
-        },
-      },
-      user: {
-        connect: {
-          id: userToRoom.userId,
-        },
-      },
-    };
-
-    const userConnectedWithTheRoom: UserToRoomResponse =
-      await this.prisma.userRoom
-        .create({
-          data,
-          select: {
-            room: {
-              select: {
-                id: true,
-                name: true,
-                status: true,
-                ballTime: true,
-                userCards: true,
-              },
-            },
-            user: {
-              select: {
-                id: true,
-                nickname: true,
-                score: true,
-              },
-            },
-          },
-        })
-        .catch(serverError);
-
-    return userConnectedWithTheRoom;
-  }
-
   async checkIfThereIsARoom(roomId: string): Promise<void> {
     const room = await this.prisma.room
       .findUnique({

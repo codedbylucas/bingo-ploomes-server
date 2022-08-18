@@ -4,10 +4,11 @@ import { CardController } from './card.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { UserService } from 'src/user/user.service';
 import { RoomService } from 'src/room/room.service';
+import { RoomUserService } from 'src/room-user/room-user.service';
 
 @Module({
   imports: [PrismaModule],
   controllers: [CardController],
-  providers: [CardService, UserService, RoomService],
+  providers: [CardService, UserService, RoomService, RoomUserService],
 })
 export class CardModule {}

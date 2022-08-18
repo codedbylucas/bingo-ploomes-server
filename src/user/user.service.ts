@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { CardService } from 'src/card/card.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { RoomUserService } from 'src/room-user/room-user.service';
 import { UserToRoom } from 'src/room/entities/types/user-to-room.type';
 import { RoomService } from 'src/room/room.service';
 import { notFoundError } from 'src/utils/not-found.util';
@@ -19,6 +20,8 @@ export class UserService {
 
     @Inject(forwardRef(() => RoomService))
     private readonly roomService: RoomService,
+
+    private readonly roomUserService: RoomUserService,
   ) {}
 
   async createUser(nickname: string): Promise<User> {
@@ -51,9 +54,8 @@ export class UserService {
       roomId: joinUserRoom.roomId,
     };
 
-    const userConnectedWithTheRoom = await this.roomService.connectUserToRoom(
-      userToRoom,
-    );
+    const userConnectedWithTheRoom =
+      await this.roomUserService.connectUserToRoom(userToRoom);
 
     return userConnectedWithTheRoom;
   }
