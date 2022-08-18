@@ -7,7 +7,8 @@ import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from './entities/room.entity';
-import { UserToRoom } from './entities/types/connect-user-to-room.type';
+import { UserToRoomResponse } from './entities/types/user-to-room-response.type';
+import { UserToRoom } from './entities/types/user-to-room.type';
 
 @Injectable()
 export class RoomService {
@@ -129,20 +130,10 @@ export class RoomService {
   //   return rooms;
   // }
 
-  async checkIfThereIsARoom(roomId: string): Promise<void> {
-    const room = await this.prisma.room
-      .findUnique({
-        where: { id: roomId },
-        select: {
-          id: true,
-          userCards: true,
-        },
-      })
-      .catch(serverError);
-    notFoundError(room, `room with this id: (${roomId})`);
-  }
+  async connectUserToRoom(userToRoom: UserToRoom): Promise<UserToRoomResponse> {
+    await this.checkIfThereIsARoom(userToRoom.roomId);
+    await this.userService.checkIfThereIsAnUser(userToRoom.userId);
 
-  async connectUserToRoom(userToRoom: UserToRoom) {
     const data: Prisma.UserRoomCreateInput = {
       room: {
         connect: {
@@ -156,29 +147,44 @@ export class RoomService {
       },
     };
 
-    const userConnectedWithTheRoom = await this.prisma.userRoom
-      .create({
-        data,
+    const userConnectedWithTheRoom: UserToRoomResponse =
+      await this.prisma.userRoom
+        .create({
+          data,
+          select: {
+            room: {
+              select: {
+                id: true,
+                name: true,
+                status: true,
+                ballTime: true,
+                userCards: true,
+              },
+            },
+            user: {
+              select: {
+                id: true,
+                nickname: true,
+                score: true,
+              },
+            },
+          },
+        })
+        .catch(serverError);
+
+    return userConnectedWithTheRoom;
+  }
+
+  async checkIfThereIsARoom(roomId: string): Promise<void> {
+    const room = await this.prisma.room
+      .findUnique({
+        where: { id: roomId },
         select: {
-          room: {
-            select: {
-              id: true,
-              name: true,
-              ballTime: true,
-              userCards: true,
-            },
-          },
-          user: {
-            select: {
-              id: true,
-              nickname: true,
-              score: true,
-            },
-          },
+          id: true,
+          userCards: true,
         },
       })
       .catch(serverError);
-
-    return userConnectedWithTheRoom;
+    notFoundError(room, `room with this id: (${roomId})`);
   }
 }
