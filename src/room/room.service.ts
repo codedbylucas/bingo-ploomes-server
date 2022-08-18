@@ -1,14 +1,12 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from './entities/room.entity';
-import { UserToRoomResponse } from '../room-user/types/user-to-room-response.type';
-import { UserToRoom } from '../room-user/types/user-to-room.type';
+import { CreateRoom } from './types/create-room.type';
 
 @Injectable()
 export class RoomService {
@@ -19,18 +17,18 @@ export class RoomService {
     private readonly userService: UserService,
   ) {}
 
-  async createRoomAndUserHost(createRoomDto: CreateRoomDto): Promise<Room> {
+  async createRoom(createRoom: CreateRoom): Promise<Room> {
     const allNumbersDrawn: number[] = this.createAllNumbersDrawn();
 
     const data: Prisma.RoomCreateInput = {
-      name: createRoomDto.name,
+      name: createRoom.name,
       drawnNumbers: allNumbersDrawn,
       status: true,
-      ballTime: createRoomDto.ballTime,
-      userCards: createRoomDto.userCards,
+      ballTime: createRoom.ballTime,
+      userCards: createRoom.userCards,
     };
 
-    const room = await this.prisma.room
+    const room: Room = await this.prisma.room
       .create({
         data,
         select: {
@@ -39,30 +37,13 @@ export class RoomService {
           status: true,
           ballTime: true,
           userCards: true,
-          users: true,
         },
       })
       .catch(serverError);
 
-    // const userHost = {
-    //   nickname: createRoomDto.nickname,
-    // };
-
-    const user: User = await this.userService.createUser(
-      createRoomDto.nickname,
-    );
-
-    const roomAndUser = {
-      id: room.id,
-      name: room.name,
-      status: room.status,
-      ballTime: room.ballTime,
-      userCards: room.userCards,
-      users: [user],
-    };
-
-    return roomAndUser;
+    return room;
   }
+
   createAllNumbersDrawn(): number[] {
     const allNumbersDrawn: number[] = [];
 

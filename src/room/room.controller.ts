@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from './entities/room.entity';
@@ -12,7 +12,7 @@ export class RoomController {
   @ApiOperation({ summary: 'Create a room' })
   @Post()
   createRoomAndUserHost(@Body() createRoomDto: CreateRoomDto): Promise<Room> {
-    return this.roomService.createRoomAndUserHost(createRoomDto);
+    return this.roomService.createRoom(createRoomDto);
   }
 
   // @Get('/:roomId')
