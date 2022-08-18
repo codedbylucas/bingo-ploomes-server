@@ -106,6 +106,7 @@ export class UserService {
   // }
 
   createGuestNicknameForUser(nickname: string) {
+    nickname = nickname.trim();
     if (nickname == '') {
       nickname = 'Convidado';
     }

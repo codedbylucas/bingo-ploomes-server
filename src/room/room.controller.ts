@@ -15,19 +15,19 @@ export class RoomController {
     return this.roomService.createRoomAndUserHost(createRoomDto);
   }
 
-  @Get('/:roomId')
-  @ApiOperation({
-    summary: 'Get a room by its ID',
-  })
-  findSingleRoom(@Param('roomId') id: string): Promise<Room> {
-    return this.roomService.findSingleRoom(id);
-  }
+  // @Get('/:roomId')
+  // @ApiOperation({
+  //   summary: 'Get a room by its ID',
+  // })
+  // findSingleRoom(@Param('roomId') id: string): Promise<Room> {
+  //   return this.roomService.findSingleRoom(id);
+  // }
 
-  @Get()
-  @ApiOperation({
-    summary: 'Get all running rooms',
-  })
-  findAllRooms(): Promise<Room[]> {
-    return this.roomService.findAllRooms();
-  }
+  // @Get()
+  // @ApiOperation({
+  //   summary: 'Get all running rooms',
+  // })
+  // findAllRooms(): Promise<Room[]> {
+  //   return this.roomService.findAllRooms();
+  // }
 }

@@ -16,11 +16,6 @@ export class AuthService {
       where: { id: userAuthDto.userId },
       select: {
         id: true,
-        room: {
-          select: {
-            id: true,
-          },
-        },
       },
     });
 

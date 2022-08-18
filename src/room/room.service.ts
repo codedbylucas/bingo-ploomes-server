@@ -29,7 +29,7 @@ export class RoomService {
       userCards: createRoomDto.userCards,
     };
 
-    const room: Room = await this.prisma.room
+    const room = await this.prisma.room
       .create({
         data,
         select: {
@@ -45,7 +45,6 @@ export class RoomService {
 
     const userHost: CreateUserDto = {
       nickname: createRoomDto.nickname,
-      roomId: room.id,
     };
 
     const user: User = await this.userService.createUser(userHost);
@@ -74,59 +73,59 @@ export class RoomService {
     return allNumbersDrawn;
   }
 
-  async findSingleRoom(roomId: string): Promise<Room> {
-    await this.checkIfThereIsARoom(roomId);
-    const roomWithUsersAndCards: Room = await this.prisma.room
-      .findUnique({
-        where: { id: roomId },
-        select: {
-          id: true,
-          name: true,
-          status: true,
-          ballTime: true,
-          userCards: true,
-          users: {
-            select: {
-              id: true,
-              nickname: true,
-              score: true,
-              cards: {
-                select: {
-                  id: true,
-                  numbers: true,
-                },
-              },
-            },
-          },
-        },
-      })
-      .catch(serverError);
+  // async findSingleRoom(roomId: string): Promise<Room> {
+  //   await this.checkIfThereIsARoom(roomId);
+  //   const roomWithUsersAndCards: Room = await this.prisma.room
+  //     .findUnique({
+  //       where: { id: roomId },
+  //       select: {
+  //         id: true,
+  //         name: true,
+  //         status: true,
+  //         ballTime: true,
+  //         userCards: true,
+  //         users: {
+  //           select: {
+  //             id: true,
+  //             nickname: true,
+  //             score: true,
+  //             cards: {
+  //               select: {
+  //                 id: true,
+  //                 numbers: true,
+  //               },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     })
+  //     .catch(serverError);
 
-    return roomWithUsersAndCards;
-  }
+  //   return roomWithUsersAndCards;
+  // }
 
-  async findAllRooms(): Promise<Room[]> {
-    const rooms: Room[] = await this.prisma.room
-      .findMany({
-        select: {
-          id: true,
-          name: true,
-          status: true,
-          ballTime: true,
-          userCards: true,
-          users: {
-            select: {
-              id: true,
-              nickname: true,
-              score: true,
-            },
-          },
-        },
-      })
-      .catch(serverError);
-    notFoundError(rooms, `rooms`);
-    return rooms;
-  }
+  // async findAllRooms(): Promise<Room[]> {
+  //   const rooms: Room[] = await this.prisma.room
+  //     .findMany({
+  //       select: {
+  //         id: true,
+  //         name: true,
+  //         status: true,
+  //         ballTime: true,
+  //         userCards: true,
+  //         users: {
+  //           select: {
+  //             id: true,
+  //             nickname: true,
+  //             score: true,
+  //           },
+  //         },
+  //       },
+  //     })
+  //     .catch(serverError);
+  //   notFoundError(rooms, `rooms`);
+  //   return rooms;
+  // }
 
   async checkIfThereIsARoom(roomId: string): Promise<void> {
     const room = await this.prisma.room

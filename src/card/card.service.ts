@@ -17,39 +17,39 @@ export class CardService {
     private readonly userService: UserService,
   ) {}
 
-  async createCard(createCardDto: CreateCardDto): Promise<Card[]> {
-    const numberOfUserCardsInARoom: NumberOfUserCardsInARoom =
-      await this.userService.searchAUserAndNumberOfCards(createCardDto.userId);
+  async createCard(createCardDto: CreateCardDto) {
+    // const numberOfUserCardsInARoom: NumberOfUserCardsInARoom =
+    //   // await this.userService.searchAUserAndNumberOfCards(createCardDto.userId);
 
-    const generatedCards: GeneratedCard[] = this.cardsGenerator(
-      numberOfUserCardsInARoom.room.userCards,
-    );
+    // // const generatedCards: GeneratedCard[] = this.cardsGenerator(
+    // //   numberOfUserCardsInARoom.room.userCards,
+    // // );
 
-    const cards: Card[] = [];
+    // const cards: Card[] = [];
 
-    for (let i = 0; i < numberOfUserCardsInARoom.room.userCards; i++) {
-      const data: Prisma.CardCreateInput = {
-        numbers: generatedCards[i],
-        user: {
-          connect: {
-            id: createCardDto.userId,
-          },
-        },
-      };
+    // for (let i = 0; i < numberOfUserCardsInARoom.room.userCards; i++) {
+    //   const data: Prisma.CardCreateInput = {
+    //     numbers: generatedCards[i],
+    //     user: {
+    //       connect: {
+    //         id: createCardDto.userId,
+    //       },
+    //     },
+    //   };
 
-      const card: Card = await this.prisma.card
-        .create({
-          data,
-          select: {
-            id: true,
-            numbers: true,
-          },
-        })
-        .catch(serverError);
+    //   const card: Card = await this.prisma.card
+    //     .create({
+    //       data,
+    //       select: {
+    //         id: true,
+    //         numbers: true,
+    //       },
+    //     })
+    //     .catch(serverError);
 
-      cards.push(card);
-    }
-    return cards;
+    //   cards.push(card);
+    // }
+    // return cards;
   }
 
   cardsGenerator(numberOfUserCards: number): GeneratedCard[] {
