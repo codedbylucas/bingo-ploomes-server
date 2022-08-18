@@ -1,6 +1,10 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { CardService } from 'src/card/card.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
+import { RoomUserService } from 'src/room-user/room-user.service';
+import { RoomService } from 'src/room/room.service';
+import { UserService } from 'src/user/user.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
@@ -13,6 +17,12 @@ import { AuthService } from './auth.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [
+    AuthService,
+    UserService,
+    CardService,
+    RoomService,
+    RoomUserService,
+  ],
 })
 export class AuthModule {}
