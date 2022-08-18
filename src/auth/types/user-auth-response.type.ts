@@ -9,5 +9,4 @@ type cardsOfUser = {
 export type AuthUserResponse = {
   token: string;
   user: User;
-  cards: cardsOfUser[];
 };
