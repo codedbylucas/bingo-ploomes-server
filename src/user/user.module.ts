@@ -11,12 +11,6 @@ import { UserService } from './user.service';
 @Module({
   imports: [PrismaModule, JwtModule],
   controllers: [UserController],
-  providers: [
-    UserService,
-    RoomService,
-    CardService,
-    RoomUserService,
-    AuthService,
-  ],
+  providers: [UserService, RoomService, CardService, RoomUserService],
 })
 export class UserModule {}
