@@ -9,7 +9,7 @@ import {
   Min,
 } from 'class-validator';
 
-export class CreateRoomDto {
+export class CreateRoomAndUserDto {
   @IsString()
   @Length(1, 50)
   @ApiProperty({

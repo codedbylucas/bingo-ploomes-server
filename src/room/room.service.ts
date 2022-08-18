@@ -4,7 +4,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
-import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from './entities/room.entity';
 import { CreateRoom } from './types/create-room.type';
 
