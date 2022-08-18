@@ -9,6 +9,7 @@ import { RoomService } from 'src/room/room.service';
 import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
 import { JoinUserRoom } from './dto/join-user-room.dto';
+import { NumberOfUserCardsInARoom } from './entities/types/number-of-user-cards-in-a-room.type';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -22,6 +23,7 @@ export class UserService {
     @Inject(forwardRef(() => RoomService))
     private readonly roomService: RoomService,
 
+    @Inject(forwardRef(() => RoomUserService))
     private readonly roomUserService: RoomUserService,
   ) {}
 
@@ -104,26 +106,32 @@ export class UserService {
     notFoundError(user, `user with this id: (${userId})`);
   }
 
-  // async searchAUserAndNumberOfCards(
-  //   userId: string,
-  // ): Promise<NumberOfUserCardsInARoom> {
-  //   const numbersOfCards: NumberOfUserCardsInARoom = await this.prisma.user
-  //     .findUnique({
-  //       where: { id: userId },
-  //       select: {
-  //         room: {
-  //           select: {
-  //             userCards: true,
-  //           },
-  //         },
-  //       },
-  //     })
-  //     .catch(serverError);
+  async searchAUserAndNumberOfCards(
+    userId: string,
+  ): Promise<NumberOfUserCardsInARoom> {
+    type NewType = NumberOfUserCardsInARoom;
 
-  //   notFoundError(numbersOfCards, `user with this id: (${userId})`);
+    const numbersOfCards: NewType = await this.prisma.user
+      .findUnique({
+        where: { id: userId },
+        select: {
+          rooms: {
+            select: {
+              room: {
+                select: {
+                  userCards: true,
+                },
+              },
+            },
+          },
+        },
+      })
+      .catch(serverError);
 
-  //   return numbersOfCards;
-  // }
+    notFoundError(numbersOfCards, `user with this id: (${userId})`);
+
+    return numbersOfCards;
+  }
 
   createGuestNicknameForUser(nickname: string) {
     nickname = nickname.trim();
