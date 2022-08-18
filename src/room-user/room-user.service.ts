@@ -1,5 +1,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { CardService } from 'src/card/card.service';
+import { Card } from 'src/card/entities/card.entity';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserConnectedToRoom } from 'src/room-user/types/user-connected-to-room.type';
 import { UserToRoom } from 'src/room-user/types/user-to-room.type';
@@ -9,6 +11,7 @@ import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { serverError } from 'src/utils/server-error.util';
 import { CreateRoomAndUserDto } from './dto/create-room-and-user.dto';
+import { RoomUserAndCards } from './types/room-user-and-cards.type';
 
 @Injectable()
 export class RoomUserService {
@@ -19,11 +22,12 @@ export class RoomUserService {
     private readonly userService: UserService,
 
     private readonly roomService: RoomService,
+
+    @Inject(forwardRef(() => CardService))
+    private readonly cardService: CardService,
   ) {}
 
-  async connectUserToRoom(
-    userToRoom: UserToRoom,
-  ): Promise<UserConnectedToRoom> {
+  async connectUserToRoom(userToRoom: UserToRoom): Promise<RoomUserAndCards> {
     await this.roomService.checkIfThereIsARoom(userToRoom.roomId);
     await this.userService.checkIfThereIsAnUser(userToRoom.userId);
 
@@ -65,7 +69,15 @@ export class RoomUserService {
         })
         .catch(serverError);
 
-    return userConnectedWithTheRoom;
+    const card: Card[] = await this.cardService.createCard(userToRoom.userId);
+
+    const roomUserAndCards: RoomUserAndCards = {
+      room: userConnectedWithTheRoom.room,
+      user: userConnectedWithTheRoom.user,
+      cards: card,
+    };
+
+    return roomUserAndCards;
   }
 
   async createARoomAUserAndRelateThem(
