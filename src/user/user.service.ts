@@ -3,7 +3,7 @@ import { Prisma } from '@prisma/client';
 import { CardService } from 'src/card/card.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RoomUserService } from 'src/room-user/room-user.service';
-import { UserToRoomResponse } from 'src/room-user/types/user-to-room-response.type';
+import { UserConnectedToRoom } from 'src/room-user/types/user-connected-to-room.type';
 import { UserToRoom } from 'src/room-user/types/user-to-room.type';
 import { RoomService } from 'src/room/room.service';
 import { notFoundError } from 'src/utils/not-found.util';
@@ -49,7 +49,7 @@ export class UserService {
 
   async joinUserWithTheRoomAndCreateTheirCards(
     joinUserRoom: JoinUserRoom,
-  ): Promise<UserToRoomResponse> {
+  ): Promise<UserConnectedToRoom> {
     const user: User = await this.createUser(joinUserRoom.nickname);
 
     const userToRoom: UserToRoom = {
@@ -57,7 +57,7 @@ export class UserService {
       roomId: joinUserRoom.roomId,
     };
 
-    const userConnectedWithTheRoom: UserToRoomResponse =
+    const userConnectedWithTheRoom: UserConnectedToRoom =
       await this.roomUserService.connectUserToRoom(userToRoom);
 
     return userConnectedWithTheRoom;

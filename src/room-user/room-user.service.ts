@@ -1,11 +1,10 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserToRoomResponse } from 'src/room-user/types/user-to-room-response.type';
+import { UserConnectedToRoom } from 'src/room-user/types/user-connected-to-room.type';
 import { UserToRoom } from 'src/room-user/types/user-to-room.type';
 import { Room } from 'src/room/entities/room.entity';
 import { RoomService } from 'src/room/room.service';
-import { CreateRoom } from 'src/room/types/create-room.type';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { serverError } from 'src/utils/server-error.util';
@@ -22,7 +21,9 @@ export class RoomUserService {
     private readonly roomService: RoomService,
   ) {}
 
-  async connectUserToRoom(userToRoom: UserToRoom): Promise<UserToRoomResponse> {
+  async connectUserToRoom(
+    userToRoom: UserToRoom,
+  ): Promise<UserConnectedToRoom> {
     await this.roomService.checkIfThereIsARoom(userToRoom.roomId);
     await this.userService.checkIfThereIsAnUser(userToRoom.userId);
 
@@ -39,7 +40,7 @@ export class RoomUserService {
       },
     };
 
-    const userConnectedWithTheRoom: UserToRoomResponse =
+    const userConnectedWithTheRoom: UserConnectedToRoom =
       await this.prisma.userRoom
         .create({
           data,
@@ -79,9 +80,11 @@ export class RoomUserService {
       userCards,
     });
 
-    const userConnectedWithTheRoom: UserToRoomResponse =
-      await this.connectUserToRoom({ userId: user.id, roomId: room.id });
+    const roomUser: UserConnectedToRoom = await this.connectUserToRoom({
+      userId: user.id,
+      roomId: room.id,
+    });
 
-    return userConnectedWithTheRoom;
+    return roomUser;
   }
 }
