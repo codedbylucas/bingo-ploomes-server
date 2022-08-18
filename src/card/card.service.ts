@@ -4,9 +4,9 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { NumberOfUserCardsInARoom } from 'src/user/entities/types/number-of-user-cards-in-a-room.type';
 import { UserService } from 'src/user/user.service';
 import { serverError } from 'src/utils/server-error.util';
-import { CreateCardDto } from './dto/create-card.dto';
 import { Card } from './entities/card.entity';
-import { GeneratedCard } from './entities/types/generated-card.type';
+import { CreateCard } from './types/create-a-card.type';
+import { GeneratedCard } from './types/generated-card.type';
 
 @Injectable()
 export class CardService {
@@ -17,39 +17,40 @@ export class CardService {
     private readonly userService: UserService,
   ) {}
 
-  async createCard(createCardDto: CreateCardDto) {
-    // const numberOfUserCardsInARoom: NumberOfUserCardsInARoom =
-    //   // await this.userService.searchAUserAndNumberOfCards(createCardDto.userId);
+  async createCard(userId: string): Promise<Card[]> {
+    const numberOfUserCardsInARoom =
+      await this.userService.searchAUserAndNumberOfCards(userId);
 
-    // // const generatedCards: GeneratedCard[] = this.cardsGenerator(
-    // //   numberOfUserCardsInARoom.room.userCards,
-    // // );
+    const numbersOfCards = numberOfUserCardsInARoom.rooms[0].room.userCards;
 
-    // const cards: Card[] = [];
+    const generatedCards: GeneratedCard[] = this.cardsGenerator(numbersOfCards);
 
-    // for (let i = 0; i < numberOfUserCardsInARoom.room.userCards; i++) {
-    //   const data: Prisma.CardCreateInput = {
-    //     numbers: generatedCards[i],
-    //     user: {
-    //       connect: {
-    //         id: createCardDto.userId,
-    //       },
-    //     },
-    //   };
+    const cards: Card[] = [];
 
-    //   const card: Card = await this.prisma.card
-    //     .create({
-    //       data,
-    //       select: {
-    //         id: true,
-    //         numbers: true,
-    //       },
-    //     })
-    //     .catch(serverError);
+    for (let i = 0; i < numbersOfCards; i++) {
+      const data: Prisma.CardCreateInput = {
+        numbers: generatedCards[i],
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+      };
 
-    //   cards.push(card);
-    // }
-    // return cards;
+      const card: Card = await this.prisma.card
+        .create({
+          data,
+          select: {
+            id: true,
+            numbers: true,
+          },
+        })
+        .catch(serverError);
+
+      cards.push(card);
+    }
+    
+    return cards;
   }
 
   cardsGenerator(numberOfUserCards: number): GeneratedCard[] {
