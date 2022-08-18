@@ -6,9 +6,10 @@ import { RoomModule } from './room/room.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { CardModule } from './card/card.module';
 import { AppGateway } from './app.gateway';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [UserModule, RoomModule, PrismaModule, CardModule],
+  imports: [UserModule, RoomModule, PrismaModule, CardModule, AuthModule],
   controllers: [AppController],
   providers: [AppService, AppGateway],
 })
