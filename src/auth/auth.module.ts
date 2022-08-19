@@ -6,6 +6,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { RoomUserService } from 'src/room-user/room-user.service';
 import { RoomService } from 'src/room/room.service';
 import { UserService } from 'src/user/user.service';
+import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 
@@ -18,7 +19,7 @@ import { JwtStrategy } from './jwt.strategy';
       signOptions: { expiresIn: '24h' },
     }),
   ],
-  controllers: [],
+  controllers: [AuthController],
   providers: [
     AuthService,
     JwtStrategy,
