@@ -27,9 +27,11 @@ export class RoomUserService {
     private readonly cardService: CardService,
   ) {}
 
-  async connectUserToRoom(userToRoom: UserToRoom): Promise<RoomUserAndCards> {
+  async userToRoomAndCreateCards(
+    userToRoom: UserToRoom,
+  ): Promise<RoomUserAndCards> {
     await this.roomService.checkIfThereIsARoom(userToRoom.roomId);
-    await this.userService.checkIfThereIsAnUser(userToRoom.userId);
+    await this.userService.findSingleUser(userToRoom.userId);
 
     const data: Prisma.UserRoomCreateInput = {
       room: {
@@ -80,7 +82,7 @@ export class RoomUserService {
     return roomUserAndCards;
   }
 
-  async createARoomAUserAndRelateThem(
+  async createRoomAndUserAndRelateThem(
     createRoomAndUserDto: CreateRoomAndUserDto,
   ) {
     const { ballTime, name, nickname, userCards } = createRoomAndUserDto;
@@ -92,7 +94,7 @@ export class RoomUserService {
       userCards,
     });
 
-    const roomUser: UserConnectedToRoom = await this.connectUserToRoom({
+    const roomUser: UserConnectedToRoom = await this.userToRoomAndCreateCards({
       userId: user.id,
       roomId: room.id,
     });

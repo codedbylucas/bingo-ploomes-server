@@ -54,7 +54,7 @@ export class UserService {
     };
 
     const userConnectedWithTheRoom: UserConnectedToRoom =
-      await this.roomUserService.connectUserToRoom(userToRoom);
+      await this.roomUserService.userToRoomAndCreateCards(userToRoom);
 
     return userConnectedWithTheRoom;
   }

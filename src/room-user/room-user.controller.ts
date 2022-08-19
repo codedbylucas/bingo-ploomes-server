@@ -12,7 +12,7 @@ export class RoomUserController {
   @ApiOperation({ summary: 'Create a room' })
   @Post()
   createRoomAndUserHost(@Body() createRoomAndUserDto: CreateRoomAndUserDto) {
-    return this.roomUserService.createARoomAUserAndRelateThem(
+    return this.roomUserService.createRoomAndUserAndRelateThem(
       createRoomAndUserDto,
     );
   }
