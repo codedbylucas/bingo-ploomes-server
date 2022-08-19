@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { serverError } from 'src/utils/server-error.util';
+import { UserAndRoomAuth } from './types/user-id-auth.type';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -36,9 +37,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException('User not found or not authorized!');
     }
-
-    if (user) {
-      return { user };
-    }
+    const userAndRoom: UserAndRoomAuth = {
+      userId: user.id,
+      roomId: user.rooms[0].room.id,
+    };
+    return { userAndRoom };
   }
 }
