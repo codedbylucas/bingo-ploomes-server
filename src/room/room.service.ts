@@ -58,9 +58,12 @@ export class RoomService {
   }
 
   async findSingleRoom(userAndRoom: UserAndRoomAuth) {
+    
     const roomWithUsersAndCards = await this.prisma.room
-      .findFirst({
-        where: { id: userAndRoom.roomId },
+      .findUnique({
+        where: {
+          id: userAndRoom.roomId,
+        },
         select: {
           id: true,
           name: true,
