@@ -14,7 +14,7 @@ export class RoomController {
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   @ApiOperation({
-    summary: `Shows application status`,
+    summary: `Fetches the room where the user was bound by the token`,
   })
   findSingleRoom(@AuthenticatedUser() userAndRoom: UserAndRoomAuth) {
     return this.roomService.findSingleRoom(userAndRoom);
@@ -22,7 +22,7 @@ export class RoomController {
 
   @Get('/all')
   @ApiOperation({
-    summary: `Shows application status`,
+    summary: `Search all rooms`,
   })
   findAllRooms() {
     return this.roomService.findAllRooms();
