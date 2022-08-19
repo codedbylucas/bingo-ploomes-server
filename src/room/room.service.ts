@@ -1,5 +1,6 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { UserAndRoomAuth } from 'src/auth/types/user-id-auth.type';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
 import { notFoundError } from 'src/utils/not-found.util';
@@ -56,20 +57,41 @@ export class RoomService {
     return allNumbersDrawn;
   }
 
-  async findSingleRoom(roomId: string): Promise<Room> {
-    await this.checkIfThereIsARoom(roomId);
-    const roomWithUsersAndCards: Room = await this.prisma.room
+  async findSingleRoom(userAndRoom: UserAndRoomAuth) {
+    const roomWithUsersAndCards = await this.prisma.room
       .findUnique({
-        where: { id: roomId },
+        where: { id: userAndRoom.roomId },
         select: {
           id: true,
           name: true,
           status: true,
           ballTime: true,
           userCards: true,
+          users: {
+            select: {
+              user: {
+                select: {
+                  id: true,
+                  nickname: true,
+                  score: true,
+                  cards: {
+                    select: {
+                      id: true,
+                      numbers: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       })
       .catch(serverError);
+
+    notFoundError(
+      roomWithUsersAndCards,
+      `room with this id: (${userAndRoom.roomId})`,
+    );
 
     return roomWithUsersAndCards;
   }

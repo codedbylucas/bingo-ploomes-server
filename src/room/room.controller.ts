@@ -1,5 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthenticatedUser } from 'src/auth/authenticated-user.decorator';
+import { UserAndRoomAuth } from 'src/auth/types/user-id-auth.type';
 import { RoomService } from './room.service';
 
 @ApiTags('room')
@@ -8,11 +11,13 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @Get('/single')
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
   @ApiOperation({
     summary: `Shows application status`,
   })
-  findSingleRoom() {
-    return this.roomService.findSingleRoom('7b4aed21-558f-40b8-bdf7-894c5d26738c');
+  findSingleRoom(@AuthenticatedUser() userAndRoom: UserAndRoomAuth) {
+    return this.roomService.findSingleRoom(userAndRoom);
   }
 
   @Get('/all')
