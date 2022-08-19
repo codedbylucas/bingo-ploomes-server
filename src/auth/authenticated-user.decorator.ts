@@ -15,7 +15,6 @@ export const AuthenticatedUser = createParamDecorator(
         'User does not have permission to access this route',
       );
     }
-    console.log(userAndRoom);
 
     return userAndRoom;
   },
