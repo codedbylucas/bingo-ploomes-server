@@ -26,11 +26,4 @@ export class AuthController {
   authUser(@Body() userAuthDto: UserAuthDto): Promise<AuthUserResponse> {
     return this.authService.authUser(userAuthDto);
   }
-
-  @Get()
-  @UseGuards(AuthGuard())
-  @ApiBearerAuth()
-  profile() {
-    return { message: 'ok' };
-  }
 }
