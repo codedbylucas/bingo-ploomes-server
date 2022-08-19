@@ -21,11 +21,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         where: { id: payload.userId },
         select: {
           id: true,
+          nickname: true,
           rooms: {
             select: {
               room: {
                 select: {
                   id: true,
+                  name: true,
                 },
               },
             },
@@ -39,8 +41,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     const userAndRoom: UserAndRoomAuth = {
       userId: user.id,
+      nickname: user.nickname,
       roomId: user.rooms[0].room.id,
+      roomName: user.rooms[0].room.name,
     };
-    return { userAndRoom };
+
+    return userAndRoom;
   }
 }
