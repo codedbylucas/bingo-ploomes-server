@@ -19,7 +19,6 @@ export class CreateRoomAndUserDto {
   name: string;
 
   @IsString()
-  @Length(1, 50)
   @ApiProperty({
     description: 'Room creator nickname',
     example: 'Zézinho',
