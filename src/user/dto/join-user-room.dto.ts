@@ -1,9 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsUUID, Length } from 'class-validator';
+import { IsString, IsUUID } from 'class-validator';
 
-export class CreateUserDto {
+export class JoinUserRoom {
   @IsString()
-  @Length(1, 50)
   @ApiProperty({
     description: 'The name of the User',
     example: 'Pipoca doce',
@@ -12,7 +11,7 @@ export class CreateUserDto {
 
   @IsUUID()
   @ApiProperty({
-    description: 'Room ID where the user will be connected ',
+    description: 'ID of the room in which the user will connect',
     example: 'fa20725e-521f-4964-945d-a6f60f34387f',
   })
   roomId: string;

@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { CreateRoomDto } from './dto/create-room.dto';
-import { Room } from './entities/room.entity';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthenticatedUser } from 'src/auth/authenticated-user.decorator';
+import { UserAndRoomAuth } from 'src/auth/types/user-id-auth.type';
 import { RoomService } from './room.service';
 
 @ApiTags('room')
@@ -9,25 +10,21 @@ import { RoomService } from './room.service';
 export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
-  @ApiOperation({ summary: 'Create a room' })
-  @Post()
-  createRoomAndUserHost(@Body() createRoomDto: CreateRoomDto): Promise<Room> {
-    return this.roomService.createRoomAndUserHost(createRoomDto);
+  @Get('/single')
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: `Fetches the room where the user was bound by the token`,
+  })
+  findSingleRoom(@AuthenticatedUser() userAndRoom: UserAndRoomAuth) {
+    return this.roomService.findSingleRoom(userAndRoom);
   }
 
-  @Get('/:roomId')
+  @Get('/all')
   @ApiOperation({
-    summary: 'Get a room by its ID',
+    summary: `Search all rooms`,
   })
-  findSingleRoom(@Param('roomId') id: string): Promise<Room> {
-    return this.roomService.findSingleRoom(id);
-  }
-
-  @Get()
-  @ApiOperation({
-    summary: 'Get all running rooms',
-  })
-  findAllRooms(): Promise<Room[]> {
+  findAllRooms() {
     return this.roomService.findAllRooms();
   }
 }
