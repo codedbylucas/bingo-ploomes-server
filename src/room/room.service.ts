@@ -1,13 +1,12 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { UserAndRoomAuth } from 'src/auth/types/user-id-auth.type';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
-import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
-import { CreateRoomDto } from './dto/create-room.dto';
 import { Room } from './entities/room.entity';
+import { CreateRoom } from './types/create-room.type';
 
 @Injectable()
 export class RoomService {
@@ -18,15 +17,15 @@ export class RoomService {
     private readonly userService: UserService,
   ) {}
 
-  async createRoomAndUserHost(createRoomDto: CreateRoomDto): Promise<Room> {
+  async createRoom(createRoom: CreateRoom): Promise<Room> {
     const allNumbersDrawn: number[] = this.createAllNumbersDrawn();
 
     const data: Prisma.RoomCreateInput = {
-      name: createRoomDto.name,
+      name: createRoom.name,
       drawnNumbers: allNumbersDrawn,
       status: true,
-      ballTime: createRoomDto.ballTime,
-      userCards: createRoomDto.userCards,
+      ballTime: createRoom.ballTime,
+      userCards: createRoom.userCards,
     };
 
     const room: Room = await this.prisma.room
@@ -38,29 +37,13 @@ export class RoomService {
           status: true,
           ballTime: true,
           userCards: true,
-          users: true,
         },
       })
       .catch(serverError);
 
-    const userHost: CreateUserDto = {
-      nickname: createRoomDto.nickname,
-      roomId: room.id,
-    };
-
-    const user: User = await this.userService.createUser(userHost);
-
-    const roomAndUser = {
-      id: room.id,
-      name: room.name,
-      status: room.status,
-      ballTime: room.ballTime,
-      userCards: room.userCards,
-      users: [user],
-    };
-
-    return roomAndUser;
+    return room;
   }
+
   createAllNumbersDrawn(): number[] {
     const allNumbersDrawn: number[] = [];
 
@@ -74,11 +57,13 @@ export class RoomService {
     return allNumbersDrawn;
   }
 
-  async findSingleRoom(roomId: string): Promise<Room> {
-    await this.checkIfThereIsARoom(roomId);
-    const roomWithUsersAndCards: Room = await this.prisma.room
+  async findSingleRoom(userAndRoom: UserAndRoomAuth) {
+    
+    const roomWithUsersAndCards = await this.prisma.room
       .findUnique({
-        where: { id: roomId },
+        where: {
+          id: userAndRoom.roomId,
+        },
         select: {
           id: true,
           name: true,
@@ -87,13 +72,17 @@ export class RoomService {
           userCards: true,
           users: {
             select: {
-              id: true,
-              nickname: true,
-              score: true,
-              cards: {
+              user: {
                 select: {
                   id: true,
-                  numbers: true,
+                  nickname: true,
+                  score: true,
+                  cards: {
+                    select: {
+                      id: true,
+                      numbers: true,
+                    },
+                  },
                 },
               },
             },
@@ -101,6 +90,11 @@ export class RoomService {
         },
       })
       .catch(serverError);
+
+    notFoundError(
+      roomWithUsersAndCards,
+      `room with this id: (${userAndRoom.roomId})`,
+    );
 
     return roomWithUsersAndCards;
   }
@@ -114,13 +108,6 @@ export class RoomService {
           status: true,
           ballTime: true,
           userCards: true,
-          users: {
-            select: {
-              id: true,
-              nickname: true,
-              score: true,
-            },
-          },
         },
       })
       .catch(serverError);

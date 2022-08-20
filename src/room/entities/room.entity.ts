@@ -6,5 +6,4 @@ export class Room {
   status: boolean;
   ballTime: number;
   userCards: number;
-  users: User[];
 }
