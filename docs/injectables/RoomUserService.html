@@ -1,0 +1,518 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>bingo-ploomes-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+
+        <div class="navbar navbar-default navbar-fixed-top visible-xs">
+            <a href="../" class="navbar-brand">bingo-ploomes-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li>Injectables</li>
+  <li >RoomUserService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="active">
+            <a href="#info" role="tab" id="info-tab" data-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li >
+            <a href="#source" role="tab" id="source-tab" data-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="c-info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>src/room-user/room-user.service.ts</code>
+        </p>
+
+
+
+
+
+            <section>
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#createRoomAndUserAndRelateThem" >createRoomAndUserAndRelateThem</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#userToRoomAndCreateCards" >userToRoomAndCreateCards</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section>
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(prisma: <a href="../injectables/PrismaService.html" target="_self">PrismaService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, roomService: <a href="../injectables/RoomService.html" target="_self">RoomService</a>, cardService: <a href="../injectables/CardService.html" target="_self">CardService</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">src/room-user/room-user.service.ts:17</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>prisma</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/PrismaService.html" target="_self" >PrismaService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>userService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UserService.html" target="_self" >UserService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>roomService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/RoomService.html" target="_self" >RoomService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>cardService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CardService.html" target="_self" >CardService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section>
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createRoomAndUserAndRelateThem"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>createRoomAndUserAndRelateThem</b></span>
+                        <a href="#createRoomAndUserAndRelateThem"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createRoomAndUserAndRelateThem(createRoomAndUserDto: <a href="../classes/CreateRoomAndUserDto.html" target="_self">CreateRoomAndUserDto</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="85"
+                            class="link-to-prism">src/room-user/room-user.service.ts:85</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>createRoomAndUserDto</td>
+                                    <td>
+                                                <code><a href="../classes/CreateRoomAndUserDto.html" target="_self" >CreateRoomAndUserDto</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>    <code>unknown</code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="userToRoomAndCreateCards"></a>
+                    <span class="name">
+                        <span class="modifier">Async</span>
+                        <span ><b>userToRoomAndCreateCards</b></span>
+                        <a href="#userToRoomAndCreateCards"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>userToRoomAndCreateCards(userToRoom: <a href="../undefineds/UserToRoom.html" target="_self">UserToRoom</a>)</code>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">src/room-user/room-user.service.ts:30</a></div>
+                </td>
+            </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                    <div class="io-description">
+                        <b>Parameters :</b>
+                        
+                        <table class="params">
+                            <thead>
+                                <tr>
+                                    <td>Name</td>
+                                    <td>Type</td>
+                                    <td>Optional</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>userToRoom</td>
+                                    <td>
+                                                <code><a href="../miscellaneous/typealiases.html#UserToRoom" target="_self" >UserToRoom</a></code>
+                                    </td>
+
+                                    <td>
+                                        No
+                                    </td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                    </div>
+                    <div class="io-description">
+                        <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#RoomUserAndCards" target="_self" >Promise&lt;RoomUserAndCards&gt;</a></code>
+
+                    </div>
+                    <div class="io-description">
+                        
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="c-source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { Prisma } from &#x27;@prisma/client&#x27;;
+import { CardService } from &#x27;src/card/card.service&#x27;;
+import { Card } from &#x27;src/card/entities/card.entity&#x27;;
+import { PrismaService } from &#x27;src/prisma/prisma.service&#x27;;
+import { UserConnectedToRoom } from &#x27;src/room-user/types/user-connected-to-room.type&#x27;;
+import { UserToRoom } from &#x27;src/room-user/types/user-to-room.type&#x27;;
+import { Room } from &#x27;src/room/entities/room.entity&#x27;;
+import { RoomService } from &#x27;src/room/room.service&#x27;;
+import { User } from &#x27;src/user/entities/user.entity&#x27;;
+import { UserService } from &#x27;src/user/user.service&#x27;;
+import { serverError } from &#x27;src/utils/server-error.util&#x27;;
+import { CreateRoomAndUserDto } from &#x27;./dto/create-room-and-user.dto&#x27;;
+import { RoomUserAndCards } from &#x27;./types/room-user-and-cards.type&#x27;;
+
+@Injectable()
+export class RoomUserService {
+  constructor(
+    private readonly prisma: PrismaService,
+
+    @Inject(forwardRef(() &#x3D;&gt; UserService))
+    private readonly userService: UserService,
+
+    private readonly roomService: RoomService,
+
+    @Inject(forwardRef(() &#x3D;&gt; CardService))
+    private readonly cardService: CardService,
+  ) {}
+
+  async userToRoomAndCreateCards(
+    userToRoom: UserToRoom,
+  ): Promise&lt;RoomUserAndCards&gt; {
+    await this.roomService.checkIfThereIsARoom(userToRoom.roomId);
+    await this.userService.findSingleUser(userToRoom.userId);
+
+    const data: Prisma.UserRoomCreateInput &#x3D; {
+      room: {
+        connect: {
+          id: userToRoom.roomId,
+        },
+      },
+      user: {
+        connect: {
+          id: userToRoom.userId,
+        },
+      },
+    };
+
+    const userConnectedWithTheRoom: UserConnectedToRoom &#x3D;
+      await this.prisma.userRoom
+        .create({
+          data,
+          select: {
+            room: {
+              select: {
+                id: true,
+                name: true,
+                status: true,
+                ballTime: true,
+                userCards: true,
+              },
+            },
+            user: {
+              select: {
+                id: true,
+                nickname: true,
+                score: true,
+              },
+            },
+          },
+        })
+        .catch(serverError);
+
+    const card: Card[] &#x3D; await this.cardService.createCard(userToRoom.userId);
+
+    const roomUserAndCards: RoomUserAndCards &#x3D; {
+      room: userConnectedWithTheRoom.room,
+      user: userConnectedWithTheRoom.user,
+      cards: card,
+    };
+
+    return roomUserAndCards;
+  }
+
+  async createRoomAndUserAndRelateThem(
+    createRoomAndUserDto: CreateRoomAndUserDto,
+  ) {
+    const { ballTime, name, nickname, userCards } &#x3D; createRoomAndUserDto;
+
+    const user: User &#x3D; await this.userService.createUser(nickname);
+    const room: Room &#x3D; await this.roomService.createRoom({
+      name,
+      ballTime,
+      userCards,
+    });
+
+    const roomUser: UserConnectedToRoom &#x3D; await this.userToRoomAndCreateCards({
+      userId: user.id,
+      roomId: room.id,
+    });
+
+    return roomUser;
+  }
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'RoomUserService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
