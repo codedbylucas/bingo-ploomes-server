@@ -59,8 +59,8 @@ NodeJs | Typescript | React | PostgreSQL
 ## ✒️ Autores
 
 * **Luis Couto** - *Front-end* - [GITHUB](https://github.com/lhcouto)
-* **Leonardo Tinoco** - *Back-end* - [umdesenvolvedor](https://github.com/leotinoco7)
-* **Lucas Marques** - *Back-end* - [umdesenvolvedor](https://github.com/mlucasdev/)
+* **Leonardo Tinoco** - *Back-end* - [GITHUB](https://github.com/leotinoco7)
+* **Lucas Marques** - *Back-end* - [GITHUB](https://github.com/mlucasdev/)
 * **Marcelo Santos** - *Back-end* - [GITHUB](https://github.com/DJMarshallSantos)
 * **Ramon Lopes** - *Front-end* - [GITHUB](https://github.com/RamonMarcelLopes)
 
