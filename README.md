@@ -1,73 +1,69 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Bingo do G5
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Um parágrafo da descrição do projeto vai aqui
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Começando
 
-## Description
+Essas instruções permitirão que você obtenha uma cópia do projeto em operação na sua máquina local para fins de desenvolvimento e teste.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### 📋 Pré-requisitos
 
-## Installation
+De que coisas você precisa para instalar o software e como instalá-lo?
 
-```bash
-$ npm install
+```
+Dar exemplos
 ```
 
-## Running the app
+### 🔧 Instalação
 
-```bash
-# development
-$ npm run start
+Uma série de exemplos passo-a-passo que informam o que você deve executar para ter um ambiente de desenvolvimento em execução.
 
-# watch mode
-$ npm run start:dev
+Diga como essa etapa será:
 
-# production mode
-$ npm run start:prod
+```
+Dar exemplos
 ```
 
-## Test
+E repita:
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```
+Até finalizar
 ```
 
-## Support
+Termine com um exemplo de como obter dados do sistema ou como usá-los para uma pequena demonstração.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## ⚙️ Executando os testes
 
-## Stay in touch
+Explicar como executar os testes automatizados para este sistema.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### 🔩 Analise os testes de ponta a ponta
 
-## License
+Explique que eles verificam esses testes e porquê.
 
-Nest is [MIT licensed](LICENSE).
+```
+Dar exemplos
+```
+
+### ⌨️ E testes de estilo de codificação
+
+Explique que eles verificam esses testes e porquê.
+
+```
+Dar exemplos
+```
+
+## 🛠️ Construído com
+
+NodeJs | Typescript | React | PostgreSQL
+
+## ✒️ Autores
+
+* **Luis Couto** - *Front-end* - [GITHUB](https://github.com/lhcouto)
+* **Leonardo Tinoco** - *Back-end* - [umdesenvolvedor](https://github.com/leotinoco7)
+* **Lucas Marques** - *Back-end* - [umdesenvolvedor](https://github.com/mlucasdev/)
+* **Marcelo Santos** - *Back-end* - [GITHUB](https://github.com/DJMarshallSantos)
+* **Ramon Lopes** - *Front-end* - [GITHUB](https://github.com/RamonMarcelLopes)
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT License - veja o arquivo [LICENSE.md](https://github.com/mlucasdev/bingo-ploomes-server/blob/main/LICENSE) para detalhes.
