@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
+import { AppGateway } from 'gateway/gateway';
+import { GatewayModule } from 'gateway/gateway.module';
 import { AppController } from './app.controller';
-import { AppGateway } from './app.gateway';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CardModule } from './card/card.module';
@@ -17,6 +18,7 @@ import { UserModule } from './user/user.module';
     CardModule,
     AuthModule,
     RoomUserModule,
+    GatewayModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppGateway],
