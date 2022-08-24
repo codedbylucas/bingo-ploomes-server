@@ -1,55 +1,36 @@
 # Bingo do G5
 
-Um parágrafo da descrição do projeto vai aqui
+Esse projeto foi desenvolvido para construção de um bingo online multiplayer
 
 ## 🚀 Começando
 
-Essas instruções permitirão que você obtenha uma cópia do projeto em operação na sua máquina local para fins de desenvolvimento e teste.
+Você pode acessar o projeto através do deploy:
+
+[Deploy Front-end](https://bingo-g5-front.onrender.com/)
+
+[Deploy Back-end](https://bingo-g5-ploomes.onrender.com/)
+
+Caso deseje rodar localmente, siga as instruções abaixo:
 
 ### 📋 Pré-requisitos
 
-De que coisas você precisa para instalar o software e como instalá-lo?
-
+Primeiramente, clone o repositório:
 ```
-Dar exemplos
+git clone https://github.com/mlucasdev/bingo-ploomes-server.git
 ```
 
 ### 🔧 Instalação
 
-Uma série de exemplos passo-a-passo que informam o que você deve executar para ter um ambiente de desenvolvimento em execução.
-
-Diga como essa etapa será:
+Instale todas as dependências:
 
 ```
-Dar exemplos
+npm install
 ```
 
-E repita:
+Rode o projeto em modo desenvolvedor:
 
 ```
-Até finalizar
-```
-
-Termine com um exemplo de como obter dados do sistema ou como usá-los para uma pequena demonstração.
-
-## ⚙️ Executando os testes
-
-Explicar como executar os testes automatizados para este sistema.
-
-### 🔩 Analise os testes de ponta a ponta
-
-Explique que eles verificam esses testes e porquê.
-
-```
-Dar exemplos
-```
-
-### ⌨️ E testes de estilo de codificação
-
-Explique que eles verificam esses testes e porquê.
-
-```
-Dar exemplos
+npm run start:dev
 ```
 
 ## 🛠️ Construído com
