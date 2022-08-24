@@ -1,6 +1,6 @@
 # Bingo do G5
 
-Esse projeto foi desenvolvido para construção de um bingo online multiplayer
+Esse projeto foi desenvolvido para construção de um bingo online multiplayer.
 
 ## 🚀 Começando
 
