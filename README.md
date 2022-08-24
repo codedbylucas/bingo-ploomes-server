@@ -1,6 +1,7 @@
 # Bingo do G5
 
-Esse projeto foi desenvolvido para construção de um bingo online multiplayer.
+Esse projeto foi desenvolvido para construção de um bingo online multiplayer, com a criação de multiplas salas e chat utilizando WebSocket.
+
 
 ## 🚀 Começando
 
@@ -35,8 +36,8 @@ npm run start:dev
 
 ## 🛠️ Construído com
 
-NodeJs | Typescript | React | PostgreSQL
-
+NodeJs | Typescript | NestJs | React | PostgreSQL | Socket.io
+ 
 ## ✒️ Autores
 
 * **Luis Couto** - *Front-end* - [GITHUB](https://github.com/lhcouto)
