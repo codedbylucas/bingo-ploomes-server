@@ -131,16 +131,16 @@ export class BallsGateway
     // console.log(roomWhithUser);
 
     const room = this.rooms.find((room) => room.id === roomId);
-    // const user = room.users.find((user) => user.userId === userId);
+    const user = room.users.find((user) => user.userId === userId);
 
-    console.log('room', roomWhithUser.drawnNumbers);
+    // console.log('room', roomWhithUser.drawnNumbers);
 
     const sortCalledBalls = this.cardService.sortCalledBalls(
       room.ballCounter,
       roomWhithUser.drawnNumbers,
     );
 
-    console.log('sortCalledBalls', sortCalledBalls);
+    // console.log('sortCalledBalls', sortCalledBalls);
     // console.log('cards', roomWhithUser.users[0].cards);
 
     const userCards: GeneratedCard[] = roomWhithUser.users[0].cards.map(
@@ -181,9 +181,19 @@ export class BallsGateway
       checkReverseDiagonal ||
       checkVerticalBingo
     ) {
-      this.io.emit('bingo-true');
+      this.io.emit('verify-bingo', {
+        bingo: true,
+        nickname: user.nickname,
+        score: user.score + 1,
+      });
       console.log('bingou');
     } else {
+      this.io.emit('verify-bingo', {
+        bingo: false,
+        nickname: user.nickname,
+        score: user.score - 1,
+      });
+
       const notBingo = async () => {
         const roomWhithUser2: RoomSocket = await this.findRoomAndUser(
           userId,
