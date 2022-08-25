@@ -120,6 +120,7 @@ export class RoomService {
       })
       .catch(serverError);
     notFoundError(rooms, `rooms`);
+
     return rooms;
   }
 
