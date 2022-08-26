@@ -103,12 +103,21 @@ export class BallsGateway
             end: true,
           });
         } else {
-          console.log('ddddddd', drawnNumber);
+          if (this.rooms[i].lastSixBalls.length < 6) {
+            this.rooms[i].lastSixBalls.push(
+              drawnNumber[this.rooms[i].ballCounter],
+            );
+          } else {
+            this.rooms[i].lastSixBalls.splice(0, 1);
+            this.rooms[i].lastSixBalls.push(
+              drawnNumber[this.rooms[i].ballCounter],
+            );
+          }
           this.io.emit('new-ball', {
             ball: drawnNumber[this.rooms[i].ballCounter],
+            lastSixBalls: this.rooms[i].lastSixBalls,
           });
 
-          console.log('aaaaaaaaa', this.rooms[i].ballCounter);
           this.rooms[i].ballCounter++;
         }
       }
@@ -261,6 +270,7 @@ export class BallsGateway
       ballTime: userRoom.room.ballTime,
       drawnNumbers: userRoom.room.drawnNumbers,
       ballCounter: 0,
+      lastSixBalls: [],
       users: [
         {
           clientId: clientId,

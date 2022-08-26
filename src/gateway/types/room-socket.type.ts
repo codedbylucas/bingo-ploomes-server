@@ -6,4 +6,5 @@ export type RoomSocket = {
   drawnNumbers: number[];
   users: UserSocket[];
   ballCounter: number;
+  lastSixBalls: number[];
 };
