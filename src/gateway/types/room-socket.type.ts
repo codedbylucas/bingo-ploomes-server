@@ -7,4 +7,5 @@ export type RoomSocket = {
   users: UserSocket[];
   ballCounter: number;
   lastSixBalls: number[];
+  interval?: NodeJS.Timer;
 };

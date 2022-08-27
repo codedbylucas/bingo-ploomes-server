@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import {
   ConnectedSocket,
   MessageBody,
@@ -30,7 +29,6 @@ export class BallsGateway
   implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect
 {
   constructor(
-    private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
     private readonly cardService: CardService,
   ) {}
@@ -38,7 +36,6 @@ export class BallsGateway
   io: Server;
 
   private rooms: RoomSocket[] = [];
-  private interval: any;
 
   handleConnection(client: Socket) {
     console.log(`client connect: ${client.id}`);
@@ -67,8 +64,16 @@ export class BallsGateway
         roomId,
         client.id,
       );
-
       this.createRoomAndUserOnSocket(roomWhithUser);
+
+      client.join(roomId);
+
+      this.io.to(roomId).emit('new-user', roomWhithUser.users[0]);
+
+      this.io.to(roomId).emit('remove-button-bingo', false);
+
+      console.log(roomWhithUser);
+    } else {
     }
   }
 
@@ -88,9 +93,13 @@ export class BallsGateway
     const timer: number = +(roomWhithUser.ballTime + '000');
 
     this.emitNewBall(roomWhithUser.drawnNumbers, roomId);
-    this.interval = setInterval(() => {
-      this.emitNewBall(roomWhithUser.drawnNumbers, roomId);
-    }, timer);
+    for (let i = 0; i < this.rooms.length; i++) {
+      if (this.rooms[i].id === roomId) {
+        this.rooms[i].interval = setInterval(() => {
+          this.emitNewBall(roomWhithUser.drawnNumbers, roomId);
+        }, timer);
+      }
+    }
   }
 
   emitNewBall(drawnNumber: number[], roomId: string) {
@@ -98,8 +107,8 @@ export class BallsGateway
       if (this.rooms[i].id === roomId) {
         if (this.rooms[i].ballCounter === 75) {
           this.rooms[i].ballCounter = 0;
-          clearInterval(this.interval);
-          this.io.emit('new-ball', {
+          clearInterval(this.rooms[i].interval);
+          this.io.to(roomId).emit('new-ball', {
             end: true,
           });
         } else {
@@ -113,7 +122,7 @@ export class BallsGateway
               drawnNumber[this.rooms[i].ballCounter],
             );
           }
-          this.io.emit('new-ball', {
+          this.io.to(roomId).emit('new-ball', {
             ball: drawnNumber[this.rooms[i].ballCounter],
             lastSixBalls: this.rooms[i].lastSixBalls,
           });
@@ -129,28 +138,27 @@ export class BallsGateway
     @ConnectedSocket() client: Socket,
     @MessageBody() roomAndUser: RoomIdUserId,
   ) {
-    clearInterval(this.interval);
     const { userId, roomId } = roomAndUser;
 
+    for (let i = 0; i < this.rooms.length; i++) {
+      if (this.rooms[i].id === roomId) {
+        clearInterval(this.rooms[i].interval);
+      }
+    }
+    console.log('rooooom', roomId);
     const roomWhithUser: RoomSocket = await this.findRoomAndUser(
       userId,
       roomId,
       client.id,
     );
-    // console.log(roomWhithUser);
 
     const room = this.rooms.find((room) => room.id === roomId);
     const user = room.users.find((user) => user.userId === userId);
-
-    // console.log('room', roomWhithUser.drawnNumbers);
 
     const sortCalledBalls = this.cardService.sortCalledBalls(
       room.ballCounter,
       roomWhithUser.drawnNumbers,
     );
-
-    // console.log('sortCalledBalls', sortCalledBalls);
-    // console.log('cards', roomWhithUser.users[0].cards);
 
     const userCards: GeneratedCard[] = roomWhithUser.users[0].cards.map(
       (card) => {
@@ -163,26 +171,20 @@ export class BallsGateway
       sortCalledBalls,
     );
 
-    // console.log(checkVerticalBingo);
-
     const checkHorizontalBingo = this.cardService.checkHorizontalBingo(
       userCards,
       sortCalledBalls,
     );
 
-    // console.log(checkHorizontalBingo);
-
     const checkDiagonalBingo = this.cardService.checkDiagonalBingo(
       userCards,
       sortCalledBalls,
     );
-    // console.log(checkDiagonalBingo);
 
     const checkReverseDiagonal = this.cardService.checkReverseDiagonal(
       userCards,
       sortCalledBalls,
     );
-    // console.log(checkReverseDiagonal);
 
     if (
       checkDiagonalBingo ||
@@ -190,41 +192,41 @@ export class BallsGateway
       checkReverseDiagonal ||
       checkVerticalBingo
     ) {
-      this.io.emit('verify-bingo', {
+      this.io.to(roomId).emit('verify-bingo', {
         bingo: true,
         nickname: user.nickname,
         score: user.score + 1,
       });
       console.log('bingou');
     } else {
-      this.io.emit('verify-bingo', {
+      this.io.to(roomId).emit('verify-bingo', {
         bingo: false,
         nickname: user.nickname,
         score: user.score - 1,
       });
 
-      const notBingo = async () => {
-        const roomWhithUser2: RoomSocket = await this.findRoomAndUser(
-          userId,
-          roomId,
-          client.id,
-        );
-        const drawnNumbers = roomWhithUser2.drawnNumbers;
-        // console.log(roomWhithUser2.drawnNumbers);
+      this.io.to(roomId).emit('remove-button-bingo', true);
 
-        // console.log(drawnNumbers);
+      const timeOut = async () => {
+        for (let i = 0; i < this.rooms.length; i++) {
+          if (this.rooms[i].id === roomId) {
+            const roomWhithUser2: RoomSocket = await this.findRoomAndUser(
+              userId,
+              roomId,
+              client.id,
+            );
+            const drawnNumbers: number[] = roomWhithUser2.drawnNumbers;
 
-        const timer: number = +(roomWhithUser.ballTime + '000');
+            const timer: number = +(roomWhithUser.ballTime + '000');
 
-        this.emitNewBall(drawnNumbers, roomId);
-
-        this.interval = setInterval(() => {
-          this.emitNewBall(drawnNumbers, roomId);
-        }, timer);
+            this.rooms[i].interval = setInterval(() => {
+              this.emitNewBall(drawnNumbers, roomId);
+            }, timer);
+          }
+        }
       };
 
-      console.log('não bingou');
-      setTimeout(notBingo, 10000);
+      setTimeout(timeOut, 5000);
     }
   }
 
