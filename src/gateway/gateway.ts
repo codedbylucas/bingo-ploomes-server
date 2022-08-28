@@ -119,17 +119,12 @@ export class Gateway
   ) {
     const { userId, roomId } = roomAndUser;
 
-    for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
-      if (this.roomUserGateway.rooms[i].id === roomId) {
-        clearInterval(this.roomUserGateway.rooms[i].interval);
-      }
-    }
     console.log('rooooom', roomId);
     const roomWhithUser: RoomSocket =
       await this.roomUserGateway.findRoomAndUser(userId, roomId, client.id);
 
     const room = this.roomUserGateway.rooms.find((room) => room.id === roomId);
-    const user = room.users.find((user) => user.userId === userId);
+    const user = roomWhithUser.users[0];
 
     const sortCalledBalls = this.cardService.sortCalledBalls(
       room.ballCounter,
@@ -168,6 +163,12 @@ export class Gateway
       checkReverseDiagonal ||
       checkVerticalBingo
     ) {
+      for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
+        if (this.roomUserGateway.rooms[i].id === roomId) {
+          clearInterval(this.roomUserGateway.rooms[i].interval);
+        }
+      }
+
       this.io.to(client.id).emit('verify-bingo', {
         bingo: true,
         nickname: user.nickname,
@@ -181,29 +182,20 @@ export class Gateway
         score: user.score - 1,
       });
 
-      this.io.to(client.id).emit('remove-button-bingo', true);
-
-      const timeOut = async () => {
-        for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
-          if (this.roomUserGateway.rooms[i].id === roomId) {
-            const roomWhithUser2: RoomSocket =
-              await this.roomUserGateway.findRoomAndUser(
-                userId,
-                roomId,
-                client.id,
-              );
-            const drawnNumbers: number[] = roomWhithUser2.drawnNumbers;
-
-            const timer: number = +(roomWhithUser.ballTime + '000');
-
-            this.roomUserGateway.rooms[i].interval = setInterval(() => {
-              this.ballsGateway.emitNewBall(drawnNumbers, roomId);
-            }, timer);
+      this.io.to(client.id).emit('button-bingo', false);
+      for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
+        if (this.roomUserGateway.rooms[i].id === roomId) {
+          for (let x = 0; x < this.roomUserGateway.rooms[i].users.length; x++) {
+            if (this.roomUserGateway.rooms[i].users[x].userId === user.userId) {
+              const timer: number = +(roomWhithUser.ballTime + '000') * 3;
+              console.log(timer);
+              setTimeout(() => {
+                this.io.to(client.id).emit('button-bingo', true);
+              }, timer);
+            }
           }
         }
-      };
-
-      setTimeout(timeOut, 5000);
+      }
     }
   }
 }
