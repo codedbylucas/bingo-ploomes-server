@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -9,6 +9,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
+import { timeout } from 'cron';
 import { Server, Socket } from 'socket.io';
 import { CardService } from 'src/card/card.service';
 import { GeneratedCard } from 'src/card/types/generated-card.type';
@@ -16,6 +17,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { serverError } from 'src/utils/server-error.util';
 import { RoomIdUserId } from './types/receive-room-and-user.type';
 import { RoomSocket } from './types/room-socket.type';
+import { RoomUserGateway } from './room-user/room-user.gateway';
+import { BallsGateway } from './balls/balls.gateway';
 
 @Injectable()
 @WebSocketGateway(8001, {
@@ -25,17 +28,21 @@ import { RoomSocket } from './types/room-socket.type';
   pingTimeout: 5000,
   cookie: false,
 })
-export class BallsGateway
+export class Gateway
   implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect
 {
   constructor(
     private readonly prisma: PrismaService,
     private readonly cardService: CardService,
+
+    @Inject(forwardRef(() => RoomUserGateway))
+    private readonly roomUserGateway: RoomUserGateway,
+
+    @Inject(forwardRef(() => BallsGateway))
+    private readonly ballsGateway: BallsGateway,
   ) {}
   @WebSocketServer()
-  io: Server;
-
-  private rooms: RoomSocket[] = [];
+  public io: Server;
 
   handleConnection(client: Socket) {
     console.log(`client connect: ${client.id}`);
@@ -54,23 +61,20 @@ export class BallsGateway
   ): Promise<void> {
     const { userId, roomId } = roomAndUser;
 
-    const userReconnect = this.rooms.map((element) =>
+    const userReconnect = this.roomUserGateway.rooms.map((element) =>
       element.users.find((user) => user.userId === userId),
     );
 
     if (userReconnect.length === 0 || userReconnect[0] === undefined) {
-      const roomWhithUser: RoomSocket = await this.findRoomAndUser(
-        userId,
-        roomId,
-        client.id,
-      );
-      this.createRoomAndUserOnSocket(roomWhithUser);
+      const roomWhithUser: RoomSocket =
+        await this.roomUserGateway.findRoomAndUser(userId, roomId, client.id);
+      this.roomUserGateway.createRoomAndUserOnSocket(roomWhithUser);
 
       client.join(roomId);
 
       this.io.to(roomId).emit('new-user', roomWhithUser.users[0]);
 
-      this.io.to(roomId).emit('remove-button-bingo', false);
+      this.io.to(roomId).emit('button-bingo', false);
 
       console.log(roomWhithUser);
     } else {
@@ -84,53 +88,28 @@ export class BallsGateway
   ): Promise<void> {
     const { userId, roomId } = roomAndUser;
 
-    const roomWhithUser: RoomSocket = await this.findRoomAndUser(
-      userId,
-      roomId,
-      client.id,
-    );
+    const roomWhithUser: RoomSocket =
+      await this.roomUserGateway.findRoomAndUser(userId, roomId, client.id);
 
     const timer: number = +(roomWhithUser.ballTime + '000');
 
-    this.emitNewBall(roomWhithUser.drawnNumbers, roomId);
-    for (let i = 0; i < this.rooms.length; i++) {
-      if (this.rooms[i].id === roomId) {
-        this.rooms[i].interval = setInterval(() => {
-          this.emitNewBall(roomWhithUser.drawnNumbers, roomId);
+    console.log('start-game');
+
+    for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
+      if (this.roomUserGateway.rooms[i].id === roomId) {
+        this.ballsGateway.emitNewBall(roomWhithUser.drawnNumbers, roomId);
+        this.roomUserGateway.rooms[i].interval = setInterval(() => {
+          this.ballsGateway.emitNewBall(roomWhithUser.drawnNumbers, roomId);
+        }, timer);
+
+        this.ballsGateway.ballCounterInterval(roomWhithUser.drawnNumbers, i);
+        this.roomUserGateway.rooms[i].ballCounterInterval = setInterval(() => {
+          this.ballsGateway.ballCounterInterval(roomWhithUser.drawnNumbers, i);
         }, timer);
       }
     }
-  }
 
-  emitNewBall(drawnNumber: number[], roomId: string) {
-    for (let i = 0; i < this.rooms.length; i++) {
-      if (this.rooms[i].id === roomId) {
-        if (this.rooms[i].ballCounter === 75) {
-          this.rooms[i].ballCounter = 0;
-          clearInterval(this.rooms[i].interval);
-          this.io.to(roomId).emit('new-ball', {
-            end: true,
-          });
-        } else {
-          if (this.rooms[i].lastSixBalls.length < 6) {
-            this.rooms[i].lastSixBalls.push(
-              drawnNumber[this.rooms[i].ballCounter],
-            );
-          } else {
-            this.rooms[i].lastSixBalls.splice(0, 1);
-            this.rooms[i].lastSixBalls.push(
-              drawnNumber[this.rooms[i].ballCounter],
-            );
-          }
-          this.io.to(roomId).emit('new-ball', {
-            ball: drawnNumber[this.rooms[i].ballCounter],
-            lastSixBalls: this.rooms[i].lastSixBalls,
-          });
-
-          this.rooms[i].ballCounter++;
-        }
-      }
-    }
+    this.io.to(roomId).emit('button-bingo', true);
   }
 
   @SubscribeMessage('check-bingo')
@@ -140,19 +119,16 @@ export class BallsGateway
   ) {
     const { userId, roomId } = roomAndUser;
 
-    for (let i = 0; i < this.rooms.length; i++) {
-      if (this.rooms[i].id === roomId) {
-        clearInterval(this.rooms[i].interval);
+    for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
+      if (this.roomUserGateway.rooms[i].id === roomId) {
+        clearInterval(this.roomUserGateway.rooms[i].interval);
       }
     }
     console.log('rooooom', roomId);
-    const roomWhithUser: RoomSocket = await this.findRoomAndUser(
-      userId,
-      roomId,
-      client.id,
-    );
+    const roomWhithUser: RoomSocket =
+      await this.roomUserGateway.findRoomAndUser(userId, roomId, client.id);
 
-    const room = this.rooms.find((room) => room.id === roomId);
+    const room = this.roomUserGateway.rooms.find((room) => room.id === roomId);
     const user = room.users.find((user) => user.userId === userId);
 
     const sortCalledBalls = this.cardService.sortCalledBalls(
@@ -192,35 +168,36 @@ export class BallsGateway
       checkReverseDiagonal ||
       checkVerticalBingo
     ) {
-      this.io.to(roomId).emit('verify-bingo', {
+      this.io.to(client.id).emit('verify-bingo', {
         bingo: true,
         nickname: user.nickname,
         score: user.score + 1,
       });
       console.log('bingou');
     } else {
-      this.io.to(roomId).emit('verify-bingo', {
+      this.io.to(client.id).emit('verify-bingo', {
         bingo: false,
         nickname: user.nickname,
         score: user.score - 1,
       });
 
-      this.io.to(roomId).emit('remove-button-bingo', true);
+      this.io.to(client.id).emit('remove-button-bingo', true);
 
       const timeOut = async () => {
-        for (let i = 0; i < this.rooms.length; i++) {
-          if (this.rooms[i].id === roomId) {
-            const roomWhithUser2: RoomSocket = await this.findRoomAndUser(
-              userId,
-              roomId,
-              client.id,
-            );
+        for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
+          if (this.roomUserGateway.rooms[i].id === roomId) {
+            const roomWhithUser2: RoomSocket =
+              await this.roomUserGateway.findRoomAndUser(
+                userId,
+                roomId,
+                client.id,
+              );
             const drawnNumbers: number[] = roomWhithUser2.drawnNumbers;
 
             const timer: number = +(roomWhithUser.ballTime + '000');
 
-            this.rooms[i].interval = setInterval(() => {
-              this.emitNewBall(drawnNumbers, roomId);
+            this.roomUserGateway.rooms[i].interval = setInterval(() => {
+              this.ballsGateway.emitNewBall(drawnNumbers, roomId);
             }, timer);
           }
         }
@@ -228,66 +205,5 @@ export class BallsGateway
 
       setTimeout(timeOut, 5000);
     }
-  }
-
-  async findRoomAndUser(
-    userId: string,
-    roomId: string,
-    clientId: string,
-  ): Promise<RoomSocket> {
-    const userRoom = await this.prisma.userRoom
-      .findUnique({
-        where: {
-          userId_roomId: {
-            userId: userId,
-            roomId: roomId,
-          },
-        },
-        select: {
-          room: {
-            select: {
-              id: true,
-              ballTime: true,
-              drawnNumbers: true,
-            },
-          },
-          user: {
-            select: {
-              id: true,
-              nickname: true,
-              score: true,
-              cards: {
-                select: {
-                  numbers: true,
-                },
-              },
-            },
-          },
-        },
-      })
-      .catch(serverError);
-
-    const roomAndUser: RoomSocket = {
-      id: userRoom.room.id,
-      ballTime: userRoom.room.ballTime,
-      drawnNumbers: userRoom.room.drawnNumbers,
-      ballCounter: 0,
-      lastSixBalls: [],
-      users: [
-        {
-          clientId: clientId,
-          userId: userRoom.user.id,
-          nickname: userRoom.user.nickname,
-          score: userRoom.user.score,
-          cards: userRoom.user.cards,
-        },
-      ],
-    };
-
-    return roomAndUser;
-  }
-
-  createRoomAndUserOnSocket(roomAndUser: RoomSocket): void {
-    this.rooms.push(roomAndUser);
   }
 }

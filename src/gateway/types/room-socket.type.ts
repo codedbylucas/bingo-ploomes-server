@@ -8,4 +8,5 @@ export type RoomSocket = {
   ballCounter: number;
   lastSixBalls: number[];
   interval?: NodeJS.Timer;
+  ballCounterInterval?: NodeJS.Timer;
 };
