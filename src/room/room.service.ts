@@ -80,6 +80,7 @@ export class RoomService {
                   id: true,
                   nickname: true,
                   score: true,
+                  host: true,
                   cards: {
                     select: {
                       id: true,
@@ -152,6 +153,7 @@ export class RoomService {
           nickname: user.user.nickname,
           score: user.user.score,
           isSelf: true,
+          host: user.user.host,
           cards: user.user.cards,
         };
       } else {
@@ -160,6 +162,7 @@ export class RoomService {
           nickname: user.user.nickname,
           score: user.user.score,
           isSelf: false,
+          host: user.user.host,
           cards: user.user.cards,
         };
       }

@@ -65,6 +65,7 @@ export class RoomUserService {
                 id: true,
                 nickname: true,
                 score: true,
+                host: true,
               },
             },
           },
@@ -88,6 +89,9 @@ export class RoomUserService {
     const { ballTime, name, nickname, userCards } = createRoomAndUserDto;
 
     const user: User = await this.userService.createUser(nickname);
+
+    await this.userService.setUserAsHost(user.id);
+
     const room: Room = await this.roomService.createRoom({
       name,
       ballTime,

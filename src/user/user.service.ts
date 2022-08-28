@@ -23,6 +23,7 @@ export class UserService {
     id: true,
     nickname: true,
     score: true,
+    host: true,
   };
 
   async createUser(nickname: string): Promise<User> {
@@ -118,5 +119,24 @@ export class UserService {
       nickname = 'Convidado';
     }
     return nickname;
+  }
+
+  async setUserAsHost(userId: string): Promise<User> {
+    const user: User = await this.prisma.user
+      .update({
+        where: { id: userId },
+        data: {
+          host: true,
+        },
+        select: {
+          id: true,
+          nickname: true,
+          score: true,
+          host: true,
+        },
+      })
+      .catch(serverError);
+
+    return user;
   }
 }

@@ -5,6 +5,7 @@ export type UserWhithSelf = {
   nickname: string;
   score: number;
   isSelf: boolean;
+  host: boolean,
   cards: [
     {
       id: string;
