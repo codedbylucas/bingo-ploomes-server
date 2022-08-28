@@ -9,16 +9,13 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { timeout } from 'cron';
 import { Server, Socket } from 'socket.io';
 import { CardService } from 'src/card/card.service';
 import { GeneratedCard } from 'src/card/types/generated-card.type';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { serverError } from 'src/utils/server-error.util';
+import { BallsGateway } from './balls/balls.gateway';
+import { RoomUserGateway } from './room-user/room-user.gateway';
 import { RoomIdUserId } from './types/receive-room-and-user.type';
 import { RoomSocket } from './types/room-socket.type';
-import { RoomUserGateway } from './room-user/room-user.gateway';
-import { BallsGateway } from './balls/balls.gateway';
 
 @Injectable()
 @WebSocketGateway(8001, {
@@ -32,7 +29,6 @@ export class Gateway
   implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect
 {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly cardService: CardService,
 
     @Inject(forwardRef(() => RoomUserGateway))
@@ -61,23 +57,22 @@ export class Gateway
   ): Promise<void> {
     const { userId, roomId } = roomAndUser;
 
-    const userReconnect = this.roomUserGateway.rooms.map((element) =>
-      element.users.find((user) => user.userId === userId),
-    );
+    const room = this.roomUserGateway.rooms.find((room) => room.id === roomId);
 
-    if (userReconnect.length === 0 || userReconnect[0] === undefined) {
-      const roomWhithUser: RoomSocket =
-        await this.roomUserGateway.findRoomAndUser(userId, roomId, client.id);
-      this.roomUserGateway.createRoomAndUserOnSocket(roomWhithUser);
-
-      client.join(roomId);
-
-      this.io.to(roomId).emit('new-user', roomWhithUser.users[0]);
-
-      this.io.to(roomId).emit('button-bingo', false);
-
-      console.log(roomWhithUser);
+    // console.log('room', room);
+    if (!room) {
+      this.createAndConnectUserinRoom(userId, roomId, client);
     } else {
+      console.log(userId);
+
+      const userReconnect = room.users.find((user) => user.id === userId);
+      console.log('reconnn', userReconnect);
+
+      if (!userReconnect) {
+        this.userJoinARoom(userId, roomId, client);
+      } else {
+        this.userReconnect(roomId, client);
+      }
     }
   }
 
@@ -93,7 +88,7 @@ export class Gateway
 
     const timer: number = +(roomWhithUser.ballTime + '000');
 
-    console.log('start-game');
+    // console.log('start-game');
 
     for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
       if (this.roomUserGateway.rooms[i].id === roomId) {
@@ -119,7 +114,7 @@ export class Gateway
   ) {
     const { userId, roomId } = roomAndUser;
 
-    console.log('rooooom', roomId);
+    // console.log('rooooom', roomId);
     const roomWhithUser: RoomSocket =
       await this.roomUserGateway.findRoomAndUser(userId, roomId, client.id);
 
@@ -174,7 +169,10 @@ export class Gateway
         nickname: user.nickname,
         score: user.score + 1,
       });
-      console.log('bingou');
+
+      client.to(roomId).emit('user-made-point', {
+        nickname: user.nickname,
+      });
     } else {
       this.io.to(client.id).emit('verify-bingo', {
         bingo: false,
@@ -186,9 +184,8 @@ export class Gateway
       for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
         if (this.roomUserGateway.rooms[i].id === roomId) {
           for (let x = 0; x < this.roomUserGateway.rooms[i].users.length; x++) {
-            if (this.roomUserGateway.rooms[i].users[x].userId === user.userId) {
+            if (this.roomUserGateway.rooms[i].users[x].id === user.id) {
               const timer: number = +(roomWhithUser.ballTime + '000') * 3;
-              console.log(timer);
               setTimeout(() => {
                 this.io.to(client.id).emit('button-bingo', true);
               }, timer);
@@ -197,5 +194,47 @@ export class Gateway
         }
       }
     }
+  }
+
+  async createAndConnectUserinRoom(
+    userId: string,
+    roomId: string,
+    client: Socket,
+  ) {
+    const roomWhithUser: RoomSocket =
+      await this.roomUserGateway.findRoomAndUser(userId, roomId, client.id);
+
+    this.roomUserGateway.createRoomAndUserOnSocket(roomWhithUser);
+
+    client.join(roomId);
+
+    console.log(roomWhithUser);
+  }
+
+  async userJoinARoom(userId: string, roomId: string, client: Socket) {
+    const user = await this.roomUserGateway.findUserById(userId);
+
+    this.roomUserGateway.saveAUserInTheRoom(user, roomId);
+    client.join(roomId);
+
+    // this.io.to(roomId).emit('new-user', roomWhithUser.users[0]);
+
+    this.io.to(roomId).emit('button-bingo', false);
+  }
+
+  userReconnect(roomId: string, client: Socket) {
+    const room: RoomSocket = this.roomUserGateway.rooms.find(
+      (room) => room.id === roomId,
+    );
+
+    client.join(roomId);
+    // const users = room.users.find((user) => user.userId != userId);
+
+    this.io.to(client.id).emit('user-reconnect', {
+      currentBall: room.drawnNumbers[room.ballCounter],
+      lastSixBalls: room.lastSixBalls,
+    });
+
+    console.log('3812g487fjksxb79412f', room);
   }
 }

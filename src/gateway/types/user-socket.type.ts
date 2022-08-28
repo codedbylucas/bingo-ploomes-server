@@ -1,6 +1,6 @@
 export type UserSocket = {
   clientId?: string;
-  userId: string;
+  id: string;
   nickname: string;
   score: number;
   cards: any;
