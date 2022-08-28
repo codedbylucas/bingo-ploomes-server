@@ -137,6 +137,8 @@ export class UserService {
       })
       .catch(serverError);
 
+    notFoundError(user, `user with this id: (${userId})`);
+
     return user;
   }
 }
