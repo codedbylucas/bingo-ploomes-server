@@ -161,6 +161,8 @@ export class Gateway
       for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
         if (this.roomUserGateway.rooms[i].id === roomId) {
           clearInterval(this.roomUserGateway.rooms[i].interval);
+          clearInterval(this.roomUserGateway.rooms[i].ballCounterInterval);
+          this.roomUserGateway.rooms[i].ballCounter = 0;
         }
       }
 
@@ -185,7 +187,7 @@ export class Gateway
         if (this.roomUserGateway.rooms[i].id === roomId) {
           for (let x = 0; x < this.roomUserGateway.rooms[i].users.length; x++) {
             if (this.roomUserGateway.rooms[i].users[x].id === user.id) {
-              const timer: number = +(roomWhithUser.ballTime + '000') * 3;
+              const timer: number = +(roomWhithUser.ballTime + '000') * 5;
               setTimeout(() => {
                 this.io.to(client.id).emit('button-bingo', true);
               }, timer);
@@ -217,7 +219,13 @@ export class Gateway
     this.roomUserGateway.saveAUserInTheRoom(user, roomId);
     client.join(roomId);
 
-    // this.io.to(roomId).emit('new-user', roomWhithUser.users[0]);
+    for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
+      if (this.roomUserGateway.rooms[i].id === roomId) {
+        this.io
+          .to(roomId)
+          .emit('new-user', this.roomUserGateway.rooms[i].users);
+      }
+    }
 
     this.io.to(roomId).emit('button-bingo', false);
   }
@@ -228,13 +236,17 @@ export class Gateway
     );
 
     client.join(roomId);
-    // const users = room.users.find((user) => user.userId != userId);
+
+    for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
+      if (this.roomUserGateway.rooms[i].id === roomId) {
+        this.io.to(roomId).emit('new-user', this.roomUserGateway.rooms[i].users);
+        console.log('sdadaskjd')
+      }
+    }
 
     this.io.to(client.id).emit('user-reconnect', {
-      currentBall: room.drawnNumbers[room.ballCounter],
+      currentBall: room.drawnNumbers[room.ballCounter - 1],
       lastSixBalls: room.lastSixBalls,
     });
-
-    console.log('3812g487fjksxb79412f', room);
   }
 }

@@ -17,6 +17,7 @@ export class BallsGateway {
         if (this.roomUserGateway.rooms[i].ballCounter === 75) {
           this.roomUserGateway.rooms[i].ballCounter = 0;
           clearInterval(this.roomUserGateway.rooms[i].interval);
+          clearInterval(this.roomUserGateway.rooms[i].ballCounterInterval);
           this.gateway.io.to(roomId).emit('new-ball', {
             end: true,
           });

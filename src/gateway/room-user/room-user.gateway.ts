@@ -112,4 +112,6 @@ export class RoomUserGateway {
 
     return user;
   }
+
+  
 }
