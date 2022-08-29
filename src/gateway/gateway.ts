@@ -239,8 +239,9 @@ export class Gateway
 
     for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
       if (this.roomUserGateway.rooms[i].id === roomId) {
-        this.io.to(roomId).emit('new-user', this.roomUserGateway.rooms[i].users);
-        console.log('sdadaskjd')
+        this.io
+          .to(roomId)
+          .emit('new-user', this.roomUserGateway.rooms[i].users);
       }
     }
 
