@@ -37,7 +37,7 @@ export class BallsGateway {
     }
   }
 
-  ballCounterInterval(drawnNumbers: number[], index: number) {
+  ballCounterIntervalAndPushLastSixBalls(drawnNumbers: number[], index: number) {
     if (this.roomUserGateway.rooms[index].lastSixBalls.length < 6) {
       this.roomUserGateway.rooms[index].lastSixBalls.push(
         drawnNumbers[this.roomUserGateway.rooms[index].ballCounter],

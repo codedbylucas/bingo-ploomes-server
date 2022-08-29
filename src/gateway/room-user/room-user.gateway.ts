@@ -43,6 +43,7 @@ export class RoomUserGateway {
               id: true,
               nickname: true,
               score: true,
+              host: true,
               cards: {
                 select: {
                   numbers: true,
@@ -72,6 +73,8 @@ export class RoomUserGateway {
           nickname: userRoom.user.nickname,
           score: userRoom.user.score,
           cards: userRoom.user.cards,
+          host: userRoom.user.host,
+          punishment: false,
         },
       ],
     };
@@ -99,6 +102,7 @@ export class RoomUserGateway {
           id: true,
           nickname: true,
           score: true,
+          host: true,
           cards: {
             select: {
               numbers: true,
@@ -112,6 +116,4 @@ export class RoomUserGateway {
 
     return user;
   }
-
-  
 }

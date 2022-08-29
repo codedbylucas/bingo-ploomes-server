@@ -4,4 +4,6 @@ export type UserSocket = {
   nickname: string;
   score: number;
   cards: any;
+  host: boolean;
+  punishment?: boolean;
 };
