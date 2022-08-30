@@ -28,9 +28,10 @@ model Room {
 }
 
 model User {
-  id       String @id @unique @default(uuid())
-  nickname String @db.VarChar(50)
+  id       String  @id @unique @default(uuid())
+  nickname String  @db.VarChar(50)
   score    Int
+  host     Boolean @default(false)
 
   cards Card[]
   rooms UserRoom[]
