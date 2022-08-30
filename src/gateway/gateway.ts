@@ -23,7 +23,7 @@ import { UserSocket } from './types/user-socket.type';
 
 @Injectable()
 @WebSocketGateway({
-  cors: 'https://bingo-ploomes-client-production.up.railway.app/',
+  cors: true,
   serveClient: false,
   pingInterval: 10000,
   pingTimeout: 5000,
