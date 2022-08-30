@@ -7,6 +7,8 @@ import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
 import { Room } from './entities/room.entity';
 import { CreateRoom } from './types/create-room.type';
+import { RoomUsersUserSelfCards } from './types/room-users-and-user-self-cards.type';
+import { UserWhithSelf } from './types/user-whith-self.type';
 
 @Injectable()
 export class RoomService {
@@ -57,8 +59,9 @@ export class RoomService {
     return allNumbersDrawn;
   }
 
-  async findSingleRoom(userAndRoom: UserAndRoomAuth) {
-    
+  async findSingleRoomWhithUsersAndCards(
+    userAndRoom: UserAndRoomAuth,
+  ): Promise<RoomUsersUserSelfCards> {
     const roomWithUsersAndCards = await this.prisma.room
       .findUnique({
         where: {
@@ -77,6 +80,7 @@ export class RoomService {
                   id: true,
                   nickname: true,
                   score: true,
+                  host: true,
                   cards: {
                     select: {
                       id: true,
@@ -96,7 +100,12 @@ export class RoomService {
       `room with this id: (${userAndRoom.roomId})`,
     );
 
-    return roomWithUsersAndCards;
+    const roomWithUsersCardsAndUserSelf = this.setUserSelf(
+      roomWithUsersAndCards,
+      userAndRoom,
+    );
+
+    return roomWithUsersCardsAndUserSelf;
   }
 
   async findAllRooms(): Promise<Room[]> {
@@ -112,6 +121,7 @@ export class RoomService {
       })
       .catch(serverError);
     notFoundError(rooms, `rooms`);
+
     return rooms;
   }
 
@@ -126,5 +136,49 @@ export class RoomService {
       })
       .catch(serverError);
     notFoundError(room, `room with this id: (${roomId})`);
+  }
+
+  setUserSelf(
+    roomWithUsersAndCards: any,
+    userAndRoom: UserAndRoomAuth,
+  ): RoomUsersUserSelfCards {
+    const usersWhithSelf: UserWhithSelf[] = [];
+
+    for (let user of roomWithUsersAndCards.users) {
+      let userModify: UserWhithSelf;
+
+      if (user.user.id === userAndRoom.userId) {
+        userModify = {
+          id: user.user.id,
+          nickname: user.user.nickname,
+          score: user.user.score,
+          isSelf: true,
+          host: user.user.host,
+          cards: user.user.cards,
+        };
+      } else {
+        userModify = {
+          id: user.user.id,
+          nickname: user.user.nickname,
+          score: user.user.score,
+          isSelf: false,
+          host: user.user.host,
+          cards: user.user.cards,
+        };
+      }
+
+      usersWhithSelf.push(userModify);
+    }
+
+    const roomWithUsersCardsAndUserSelf: RoomUsersUserSelfCards = {
+      id: roomWithUsersAndCards.id,
+      name: roomWithUsersAndCards.name,
+      status: roomWithUsersAndCards.status,
+      ballTime: roomWithUsersAndCards.ballTime,
+      userCards: roomWithUsersAndCards.userCards,
+      users: usersWhithSelf,
+    };
+
+    return roomWithUsersCardsAndUserSelf;
   }
 }
