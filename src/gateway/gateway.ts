@@ -22,8 +22,8 @@ import { RoomSocket } from './types/room-socket.type';
 import { UserSocket } from './types/user-socket.type';
 
 @Injectable()
-@WebSocketGateway(8001, {
-  cors: 'http://localhost:3000',
+@WebSocketGateway({
+  cors: 'https://bingo-ploomes-client-production.up.railway.app/',
   serveClient: false,
   pingInterval: 10000,
   pingTimeout: 5000,
