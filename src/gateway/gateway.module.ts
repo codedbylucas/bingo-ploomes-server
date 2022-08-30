@@ -5,6 +5,7 @@ import { RoomUserService } from 'src/room-user/room-user.service';
 import { RoomService } from 'src/room/room.service';
 import { UserService } from 'src/user/user.service';
 import { BallsGateway } from './balls/balls.gateway';
+import { ChatGateway } from './chat/chat.gateway';
 import { Gateway } from './gateway';
 import { RoomUserGateway } from './room-user/room-user.gateway';
 
@@ -19,6 +20,7 @@ import { RoomUserGateway } from './room-user/room-user.gateway';
     RoomUserService,
     RoomUserGateway,
     BallsGateway,
+    ChatGateway
   ],
 })
 export class GatewayModule {}

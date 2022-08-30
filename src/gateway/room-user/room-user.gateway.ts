@@ -66,6 +66,7 @@ export class RoomUserGateway {
       drawnNumbers: userRoom.room.drawnNumbers,
       ballCounter: 0,
       lastSixBalls: [],
+      messages: [],
       users: [
         {
           clientId: clientId,

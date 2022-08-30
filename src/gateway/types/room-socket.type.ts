@@ -1,3 +1,4 @@
+import { UserMessage } from '../chat/types/user-message.type';
 import { UserSocket } from './user-socket.type';
 
 export type RoomSocket = {
@@ -10,4 +11,5 @@ export type RoomSocket = {
   interval?: NodeJS.Timer;
   ballCounterInterval?: NodeJS.Timer;
   status?: boolean;
+  messages?: UserMessage[];
 };

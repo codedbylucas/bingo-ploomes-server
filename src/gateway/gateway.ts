@@ -14,6 +14,8 @@ import { CardService } from 'src/card/card.service';
 import { GeneratedCard } from 'src/card/types/generated-card.type';
 import { BallsGateway } from './balls/balls.gateway';
 import { DrawnNumberAndKey } from './balls/types/drawn-number-key.type';
+import { ChatGateway } from './chat/chat.gateway';
+import { ChatMessage } from './chat/types/chat-message.type';
 import { RoomUserGateway } from './room-user/room-user.gateway';
 import { RoomIdUserId } from './types/receive-room-and-user.type';
 import { RoomSocket } from './types/room-socket.type';
@@ -38,6 +40,9 @@ export class Gateway
 
     @Inject(forwardRef(() => BallsGateway))
     private readonly ballsGateway: BallsGateway,
+
+    @Inject(forwardRef(() => ChatGateway))
+    private readonly chatGateway: ChatGateway,
   ) {}
   @WebSocketServer()
   public io: Server;
@@ -67,7 +72,6 @@ export class Gateway
       this.io.to(client.id).emit('button-start', true);
     } else {
       const userReconnect = room.users.find((user) => user.id === userId);
-      console.log('reconnn', userReconnect);
 
       if (!userReconnect) {
         this.userJoinARoom(userId, roomId, client);
@@ -204,11 +208,19 @@ export class Gateway
                   .to(this.roomUserGateway.rooms[i].users[x].clientId)
                   .emit('button-bingo', true);
               }, timer);
+              return;
             }
           }
         }
       }
     }
+  }
+
+  @SubscribeMessage('chat-msg')
+  chat(@ConnectedSocket() client: Socket, @MessageBody() payload: ChatMessage) {
+    const { userId, roomId, message } = payload;
+
+    this.chatGateway.saveMessageToRoom(payload);
   }
 
   async createAndConnectUserinRoom(
@@ -223,24 +235,29 @@ export class Gateway
 
     client.join(roomId);
 
-    console.log(roomWhithUser);
+    // console.log(roomWhithUser);
   }
 
   async userJoinARoom(userId: string, roomId: string, client: Socket) {
     const user = await this.roomUserGateway.findUserById(userId);
 
     this.roomUserGateway.saveAUserInTheRoom(user, roomId);
+
+    const room = this.roomUserGateway.rooms.find((room) => room.id === roomId);
+
     client.join(roomId);
 
-    for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
-      if (this.roomUserGateway.rooms[i].id === roomId) {
-        this.io
-          .to(roomId)
-          .emit('new-user', this.roomUserGateway.rooms[i].users);
-      }
+    if (room.status) {
+      this.io.to(roomId).emit('button-bingo', true);
+    } else {
+      this.io.to(roomId).emit('button-bingo', false);
     }
 
-    this.io.to(roomId).emit('button-bingo', false);
+    this.io.to(roomId).emit('new-user', room.users);
+
+    if (room.messages.length > 0) {
+      this.io.to(client.id).emit('new-message', room.messages);
+    }
   }
 
   userReconnect(userId: string, roomId: string, client: Socket) {
@@ -260,6 +277,7 @@ export class Gateway
     client.join(roomId);
 
     this.io.to(roomId).emit('new-user', room.users);
+    this.io.to(client.id).emit('new-message', room.messages);
 
     if (room.status) {
       if (!user.punishment) {
@@ -278,7 +296,7 @@ export class Gateway
         lastSixBalls: room.lastSixBalls,
       });
     } else {
-      this.io.to(roomId).emit('button-bingo', false);
+      this.io.to(client.id).emit('button-bingo', false);
 
       if (user.host) {
         this.io.to(client.id).emit('button-start', true);

@@ -19,9 +19,7 @@ export class BallsGateway {
           this.roomUserGateway.rooms[i].ballCounter = 0;
           clearInterval(this.roomUserGateway.rooms[i].interval);
           clearInterval(this.roomUserGateway.rooms[i].ballCounterInterval);
-          this.gateway.io.to(roomId).emit('stop-balls', {
-            stop: true,
-          });
+          this.gateway.io.to(roomId).emit('stop-balls', { stop: true });
         } else {
           const ballAndKey: DrawnNumberAndKey =
             this.checkNumberAndReturnKeyAndNumber(
@@ -37,7 +35,10 @@ export class BallsGateway {
     }
   }
 
-  ballCounterIntervalAndPushLastSixBalls(drawnNumbers: number[], index: number) {
+  ballCounterIntervalAndPushLastSixBalls(
+    drawnNumbers: number[],
+    index: number,
+  ) {
     if (this.roomUserGateway.rooms[index].lastSixBalls.length < 6) {
       this.roomUserGateway.rooms[index].lastSixBalls.push(
         drawnNumbers[this.roomUserGateway.rooms[index].ballCounter],
