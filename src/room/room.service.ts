@@ -1,8 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { UserAndRoomAuth } from 'src/auth/types/user-id-auth.type';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { UserService } from 'src/user/user.service';
+import { RoundService } from 'src/round/round.service';
+import { Round } from 'src/round/types/round.type';
 import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
 import { Room } from './entities/room.entity';
@@ -14,17 +15,12 @@ import { UserWhithSelf } from './types/user-whith-self.type';
 export class RoomService {
   constructor(
     private readonly prisma: PrismaService,
-
-    @Inject(forwardRef(() => UserService))
-    private readonly userService: UserService,
+    private readonly round: RoundService,
   ) {}
 
   async createRoom(createRoom: CreateRoom): Promise<Room> {
-    const allNumbersDrawn: number[] = this.createAllNumbersDrawn();
-
     const data: Prisma.RoomCreateInput = {
       name: createRoom.name,
-      drawnNumbers: allNumbersDrawn,
       status: true,
       ballTime: createRoom.ballTime,
       userCards: createRoom.userCards,
@@ -43,20 +39,9 @@ export class RoomService {
       })
       .catch(serverError);
 
+    await this.connectRoomWhitRound(room.id);
+
     return room;
-  }
-
-  createAllNumbersDrawn(): number[] {
-    const allNumbersDrawn: number[] = [];
-
-    while (allNumbersDrawn.length < 75) {
-      const drawnNumbers: number = Math.floor(Math.random() * (76 - 1)) + 1;
-      if (!allNumbersDrawn.includes(drawnNumbers)) {
-        allNumbersDrawn.push(drawnNumbers);
-      }
-    }
-
-    return allNumbersDrawn;
   }
 
   async findSingleRoomWhithUsersAndCards(
@@ -180,5 +165,11 @@ export class RoomService {
     };
 
     return roomWithUsersCardsAndUserSelf;
+  }
+
+  async connectRoomWhitRound(roomId: string): Promise<Round> {
+    const round: Round = await this.round.createRound(roomId);
+
+    return round;
   }
 }

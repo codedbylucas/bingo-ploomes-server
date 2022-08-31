@@ -102,21 +102,22 @@ export class Gateway
       if (this.roomUserGateway.rooms[i].id === roomId) {
         this.roomUserGateway.rooms[i].status = true;
 
-        this.ballsGateway.emitNewBall(roomWhithUser.drawnNumbers, roomId);
+        // this.ballsGateway.emitNewBall(roomWhithUser.drawnNumbers, roomId);
         this.roomUserGateway.rooms[i].interval = setInterval(() => {
-          this.ballsGateway.emitNewBall(roomWhithUser.drawnNumbers, roomId);
+          // this.ballsGateway.emitNewBall(roomWhithUser.drawnNumbers, roomId);
         }, timer);
 
-        this.ballsGateway.ballCounterIntervalAndPushLastSixBalls(
-          roomWhithUser.drawnNumbers,
-          i,
-        );
-        this.roomUserGateway.rooms[i].ballCounterInterval = setInterval(() => {
-          this.ballsGateway.ballCounterIntervalAndPushLastSixBalls(
-            roomWhithUser.drawnNumbers,
-            i,
-          );
-        }, timer);
+        // this.ballsGateway.ballCounterIntervalAndPushLastSixBalls(
+        //   roomWhithUser.drawnNumbers,
+        //   i,
+        // );
+
+        // this.roomUserGateway.rooms[i].ballCounterInterval = setInterval(() => {
+        //   this.ballsGateway.ballCounterIntervalAndPushLastSixBalls(
+        //     roomWhithUser.drawnNumbers,
+        //     i,
+        //   );
+        // }, timer);
       }
     }
 
@@ -136,10 +137,10 @@ export class Gateway
     const room = this.roomUserGateway.rooms.find((room) => room.id === roomId);
     const user = roomWhithUser.users[0];
 
-    const sortCalledBalls = this.cardService.sortCalledBalls(
-      room.ballCounter,
-      roomWhithUser.drawnNumbers,
-    );
+    // const sortCalledBalls = this.cardService.sortCalledBalls(
+    //   room.ballCounter,
+    //   // roomWhithUser.drawnNumbers,
+    // );
 
     const userCards: GeneratedCard[] = roomWhithUser.users[0].cards.map(
       (card) => {
@@ -147,78 +148,78 @@ export class Gateway
       },
     );
 
-    const checkVerticalBingo = this.cardService.checkVerticalBingo(
-      userCards,
-      sortCalledBalls,
-    );
+    // const checkVerticalBingo = this.cardService.checkVerticalBingo(
+    //   userCards,
+    //   sortCalledBalls,
+    // );
 
-    const checkHorizontalBingo = this.cardService.checkHorizontalBingo(
-      userCards,
-      sortCalledBalls,
-    );
+    // const checkHorizontalBingo = this.cardService.checkHorizontalBingo(
+    //   userCards,
+    //   sortCalledBalls,
+    // );
 
-    const checkDiagonalBingo = this.cardService.checkDiagonalBingo(
-      userCards,
-      sortCalledBalls,
-    );
+    // const checkDiagonalBingo = this.cardService.checkDiagonalBingo(
+    //   userCards,
+    //   sortCalledBalls,
+    // );
 
-    const checkReverseDiagonal = this.cardService.checkReverseDiagonal(
-      userCards,
-      sortCalledBalls,
-    );
+    // const checkReverseDiagonal = this.cardService.checkReverseDiagonal(
+    //   userCards,
+    //   sortCalledBalls,
+    // );
 
-    if (
-      checkDiagonalBingo ||
-      checkHorizontalBingo ||
-      checkReverseDiagonal ||
-      checkVerticalBingo
-    ) {
-      for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
-        if (this.roomUserGateway.rooms[i].id === roomId) {
-          clearInterval(this.roomUserGateway.rooms[i].interval);
-          clearInterval(this.roomUserGateway.rooms[i].ballCounterInterval);
-          this.roomUserGateway.rooms[i].ballCounter = 0;
-        }
-      }
+    // if (
+    //   checkDiagonalBingo ||
+    //   checkHorizontalBingo ||
+    //   checkReverseDiagonal ||
+    //   checkVerticalBingo
+    // ) {
+    //   for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
+    //     if (this.roomUserGateway.rooms[i].id === roomId) {
+    //       clearInterval(this.roomUserGateway.rooms[i].interval);
+    //       clearInterval(this.roomUserGateway.rooms[i].ballCounterInterval);
+    //       this.roomUserGateway.rooms[i].ballCounter = 0;
+    //     }
+    //   }
 
-      this.io.to(client.id).emit('verify-bingo', {
-        bingo: true,
-        nickname: user.nickname,
-        score: user.score + 1,
-      });
+    //   this.io.to(client.id).emit('verify-bingo', {
+    //     bingo: true,
+    //     nickname: user.nickname,
+    //     score: user.score + 1,
+    //   });
 
-      client.to(roomId).emit('user-made-point', {
-        nickname: user.nickname,
-      });
-    } else {
-      this.io.to(client.id).emit('verify-bingo', {
-        bingo: false,
-        nickname: user.nickname,
-        score: user.score - 1,
-      });
+    //   client.to(roomId).emit('user-made-point', {
+    //     nickname: user.nickname,
+    //   });
+    // } else {
+    //   this.io.to(client.id).emit('verify-bingo', {
+    //     bingo: false,
+    //     nickname: user.nickname,
+    //     score: user.score - 1,
+    //   });
 
-      this.io.to(client.id).emit('button-bingo', false);
+    //   this.io.to(client.id).emit('button-bingo', false);
 
-      for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
-        if (this.roomUserGateway.rooms[i].id === roomId) {
-          for (let x = 0; x < this.roomUserGateway.rooms[i].users.length; x++) {
-            if (this.roomUserGateway.rooms[i].users[x].id === userId) {
-              this.roomUserGateway.rooms[i].users[x].punishment = true;
+    //   for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
+    //     if (this.roomUserGateway.rooms[i].id === roomId) {
+    //       for (let x = 0; x < this.roomUserGateway.rooms[i].users.length; x++) {
+    //         if (this.roomUserGateway.rooms[i].users[x].id === userId) {
+    //           this.roomUserGateway.rooms[i].users[x].punishment = true;
 
-              const timer: number = +(roomWhithUser.ballTime + '000') * 5;
+    //           const timer: number = +(roomWhithUser.ballTime + '000') * 5;
 
-              setTimeout(() => {
-                this.roomUserGateway.rooms[i].users[x].punishment = false;
-                this.io
-                  .to(this.roomUserGateway.rooms[i].users[x].clientId)
-                  .emit('button-bingo', true);
-              }, timer);
-              return;
-            }
-          }
-        }
-      }
-    }
+    //           setTimeout(() => {
+    //             this.roomUserGateway.rooms[i].users[x].punishment = false;
+    //             this.io
+    //               .to(this.roomUserGateway.rooms[i].users[x].clientId)
+    //               .emit('button-bingo', true);
+    //           }, timer);
+    //           return;
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
   }
 
   @SubscribeMessage('chat-msg')
@@ -292,15 +293,15 @@ export class Gateway
       if (user.host) {
         this.io.to(client.id).emit('button-start', false);
       }
-      const ballAndKey: DrawnNumberAndKey =
-        this.ballsGateway.checkNumberAndReturnKeyAndNumber(
-          room.drawnNumbers[room.ballCounter - 1],
-        );
+      // const ballAndKey: DrawnNumberAndKey =
+      //   this.ballsGateway.checkNumberAndReturnKeyAndNumber(
+      //     room.drawnNumbers[room.ballCounter - 1],
+      //   );
 
-      this.io.to(client.id).emit('user-reconnect', {
-        ballAndKey: ballAndKey,
-        lastSixBalls: room.lastSixBalls,
-      });
+      // this.io.to(client.id).emit('user-reconnect', {
+      //   ballAndKey: ballAndKey,
+      //   lastSixBalls: room.lastSixBalls,
+      // });
     } else {
       this.io.to(client.id).emit('button-bingo', false);
 

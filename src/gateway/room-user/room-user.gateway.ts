@@ -35,7 +35,6 @@ export class RoomUserGateway {
             select: {
               id: true,
               ballTime: true,
-              drawnNumbers: true,
             },
           },
           user: {
@@ -63,7 +62,6 @@ export class RoomUserGateway {
     const roomAndUser: RoomSocket = {
       id: userRoom.room.id,
       ballTime: userRoom.room.ballTime,
-      drawnNumbers: userRoom.room.drawnNumbers,
       ballCounter: 0,
       lastSixBalls: [],
       messages: [],

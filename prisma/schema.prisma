@@ -13,13 +13,14 @@ datasource db {
 model Room {
   id String @id @unique @default(uuid())
 
-  name         String  @db.VarChar(50)
-  drawnNumbers Int[]
-  status       Boolean
-  ballTime     Int
-  userCards    Int
+  name      String  @db.VarChar(50)
+  status    Boolean
+  ballTime  Int
+  userCards Int
 
   users UserRoom[]
+
+  rounds Round[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -33,8 +34,9 @@ model User {
   score    Int
   host     Boolean @default(false)
 
-  cards Card[]
-  rooms UserRoom[]
+  cards     Card[]
+  rooms     UserRoom[]
+  roundsWin Round[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -68,4 +70,21 @@ model UserRoom {
 
   @@unique([userId, roomId])
   @@map("user_room")
+}
+
+model Round {
+  id           String @id @unique @default(uuid())
+  drawnNumbers Int[]  @map("drawn_numbers")
+  bingoBall    Int?   @map("bingo_ball")
+
+  room   Room   @relation(fields: [roomId], references: [id])
+  roomId String @map("room_id")
+
+  winningUser   User?   @relation(fields: [winningUserId], references: [id])
+  winningUserId String? @map("winning-user-id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("round")
 }

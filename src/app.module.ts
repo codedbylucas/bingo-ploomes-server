@@ -10,6 +10,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { RoomUserModule } from './room-user/room-user.module';
 import { RoomModule } from './room/room.module';
 import { UserModule } from './user/user.module';
+import { RoundModule } from './round/round.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { UserModule } from './user/user.module';
     GatewayModule,
     RoomUserGatewayModule,
     BallsGatewayModule,
+    RoundModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -4,6 +4,7 @@ import { AuthService } from 'src/auth/auth.service';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { RoomUserService } from 'src/room-user/room-user.service';
 import { RoomService } from 'src/room/room.service';
+import { RoundService } from 'src/round/round.service';
 import { UserService } from 'src/user/user.service';
 import { CardService } from './card.service';
 
@@ -16,7 +17,8 @@ import { CardService } from './card.service';
     RoomService,
     RoomUserService,
     AuthService,
-    JwtService
+    JwtService,
+    RoundService
   ],
 })
 export class CardModule {}
