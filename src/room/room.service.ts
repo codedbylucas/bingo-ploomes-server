@@ -39,8 +39,6 @@ export class RoomService {
       })
       .catch(serverError);
 
-    await this.connectRoomWhitRound(room.id);
-
     return room;
   }
 
@@ -165,11 +163,5 @@ export class RoomService {
     };
 
     return roomWithUsersCardsAndUserSelf;
-  }
-
-  async connectRoomWhitRound(roomId: string): Promise<Round> {
-    const round: Round = await this.round.createRound(roomId);
-
-    return round;
   }
 }

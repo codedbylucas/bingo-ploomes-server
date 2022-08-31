@@ -8,7 +8,7 @@ import { Round } from './types/round.type';
 export class RoundService {
   constructor(private readonly prisma: PrismaService) {}
 
-  createRound(roomId: string): Promise<Round> {
+  async createRound(roomId: string): Promise<Round> {
     const drawnNumbers = this.createAllNumbersDrawn();
 
     const data: Prisma.RoundCreateInput = {
@@ -20,7 +20,7 @@ export class RoundService {
       },
     };
 
-    const round: Promise<Round> = this.prisma.round
+    const round: Round = await this.prisma.round
       .create({
         data,
         select: {
@@ -38,12 +38,42 @@ export class RoundService {
     const allNumbersDrawn: number[] = [];
 
     while (allNumbersDrawn.length < 75) {
-      const drawnNumbers: number = Math.floor(Math.random() * (76 - 1)) + 1;
-      if (!allNumbersDrawn.includes(drawnNumbers)) {
-        allNumbersDrawn.push(drawnNumbers);
+      const drawnNumber: number = Math.floor(Math.random() * (76 - 1)) + 1;
+      if (!allNumbersDrawn.includes(drawnNumber)) {
+        allNumbersDrawn.push(drawnNumber);
       }
     }
 
     return allNumbersDrawn;
+  }
+
+  async saveTheWinnerAndBingoBall(
+    roundId: string,
+    winningUserId: string,
+    bingoBall: number,
+  ): Promise<Round> {
+    const data: Prisma.RoundUpdateInput = {
+      bingoBall,
+      winningUser: {
+        connect: {
+          id: winningUserId,
+        },
+      },
+    };
+
+    const round: Round = await this.prisma.round
+      .update({
+        where: { id: roundId },
+        data,
+        select: {
+          id: true,
+          drawnNumbers: true,
+          bingoBall: true,
+          winningUserId: true,
+        },
+      })
+      .catch(serverError);
+
+    return round;
   }
 }

@@ -17,6 +17,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { CardService } from 'src/card/card.service';
 import { GeneratedCard } from 'src/card/types/generated-card.type';
+import { RoundService } from 'src/round/round.service';
 import { BallsGateway } from './balls/balls.gateway';
 import { DrawnNumberAndKey } from './balls/types/drawn-number-key.type';
 import { ChatGateway } from './chat/chat.gateway';
@@ -33,12 +34,15 @@ import { UserSocket } from './types/user-socket.type';
   pingInterval: 10000,
   pingTimeout: 5000,
   cookie: false,
+  upgrade: false,
 })
 export class Gateway
   implements OnGatewayConnection, OnGatewayInit, OnGatewayDisconnect
 {
   constructor(
     private readonly cardService: CardService,
+
+    private readonly roundService: RoundService,
 
     @Inject(forwardRef(() => RoomUserGateway))
     private readonly roomUserGateway: RoomUserGateway,
@@ -54,12 +58,14 @@ export class Gateway
 
   handleConnection(client: Socket) {
     console.log(`client connect: ${client.id}`);
+    client.removeAllListeners();
   }
 
   afterInit(server: any) {}
 
   handleDisconnect(client: Socket) {
     console.log(`client disconnect: ${client.id}`);
+    client.removeAllListeners();
   }
 
   @SubscribeMessage('create-room-and-user')
@@ -102,22 +108,28 @@ export class Gateway
       if (this.roomUserGateway.rooms[i].id === roomId) {
         this.roomUserGateway.rooms[i].status = true;
 
-        // this.ballsGateway.emitNewBall(roomWhithUser.drawnNumbers, roomId);
+        const round = await this.roundService.createRound(roomId);
+        console.log('rouuuuund', round);
+
+        this.roomUserGateway.rooms[i].rounds.push(round);
+
+        this.ballsGateway.emitNewBall(round.drawnNumbers, roomId);
+
         this.roomUserGateway.rooms[i].interval = setInterval(() => {
-          // this.ballsGateway.emitNewBall(roomWhithUser.drawnNumbers, roomId);
+          this.ballsGateway.emitNewBall(round.drawnNumbers, roomId);
         }, timer);
 
-        // this.ballsGateway.ballCounterIntervalAndPushLastSixBalls(
-        //   roomWhithUser.drawnNumbers,
-        //   i,
-        // );
+        this.ballsGateway.ballCounterIntervalAndPushLastSixBalls(
+          round.drawnNumbers,
+          i,
+        );
 
-        // this.roomUserGateway.rooms[i].ballCounterInterval = setInterval(() => {
-        //   this.ballsGateway.ballCounterIntervalAndPushLastSixBalls(
-        //     roomWhithUser.drawnNumbers,
-        //     i,
-        //   );
-        // }, timer);
+        this.roomUserGateway.rooms[i].ballCounterInterval = setInterval(() => {
+          this.ballsGateway.ballCounterIntervalAndPushLastSixBalls(
+            round.drawnNumbers,
+            i,
+          );
+        }, timer);
       }
     }
 
@@ -135,12 +147,15 @@ export class Gateway
       await this.roomUserGateway.findRoomAndUser(userId, roomId, client.id);
 
     const room = this.roomUserGateway.rooms.find((room) => room.id === roomId);
+    const round = room.rounds[room.rounds.length - 1];
+    console.log('rouuuuund', round);
+
     const user = roomWhithUser.users[0];
 
-    // const sortCalledBalls = this.cardService.sortCalledBalls(
-    //   room.ballCounter,
-    //   // roomWhithUser.drawnNumbers,
-    // );
+    const sortCalledBalls = this.cardService.sortCalledBalls(
+      room.ballCounter,
+      round.drawnNumbers,
+    );
 
     const userCards: GeneratedCard[] = roomWhithUser.users[0].cards.map(
       (card) => {
@@ -148,84 +163,90 @@ export class Gateway
       },
     );
 
-    // const checkVerticalBingo = this.cardService.checkVerticalBingo(
-    //   userCards,
-    //   sortCalledBalls,
-    // );
+    const checkVerticalBingo = this.cardService.checkVerticalBingo(
+      userCards,
+      sortCalledBalls,
+    );
 
-    // const checkHorizontalBingo = this.cardService.checkHorizontalBingo(
-    //   userCards,
-    //   sortCalledBalls,
-    // );
+    const checkHorizontalBingo = this.cardService.checkHorizontalBingo(
+      userCards,
+      sortCalledBalls,
+    );
 
-    // const checkDiagonalBingo = this.cardService.checkDiagonalBingo(
-    //   userCards,
-    //   sortCalledBalls,
-    // );
+    const checkDiagonalBingo = this.cardService.checkDiagonalBingo(
+      userCards,
+      sortCalledBalls,
+    );
 
-    // const checkReverseDiagonal = this.cardService.checkReverseDiagonal(
-    //   userCards,
-    //   sortCalledBalls,
-    // );
+    const checkReverseDiagonal = this.cardService.checkReverseDiagonal(
+      userCards,
+      sortCalledBalls,
+    );
 
-    // if (
-    //   checkDiagonalBingo ||
-    //   checkHorizontalBingo ||
-    //   checkReverseDiagonal ||
-    //   checkVerticalBingo
-    // ) {
-    //   for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
-    //     if (this.roomUserGateway.rooms[i].id === roomId) {
-    //       clearInterval(this.roomUserGateway.rooms[i].interval);
-    //       clearInterval(this.roomUserGateway.rooms[i].ballCounterInterval);
-    //       this.roomUserGateway.rooms[i].ballCounter = 0;
-    //     }
-    //   }
+    if (
+      checkDiagonalBingo ||
+      checkHorizontalBingo ||
+      checkReverseDiagonal ||
+      checkVerticalBingo
+    ) {
+      for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
+        if (this.roomUserGateway.rooms[i].id === roomId) {
+          const bingoBall = this.roundService.saveTheWinnerAndBingoBall(
+            roomId,
+            userId,
+            round.drawnNumbers[this.roomUserGateway.rooms[i].ballCounter],
+          );
 
-    //   this.io.to(client.id).emit('verify-bingo', {
-    //     bingo: true,
-    //     nickname: user.nickname,
-    //     score: user.score + 1,
-    //   });
+          console.log({ bingoBall });
 
-    //   client.to(roomId).emit('user-made-point', {
-    //     nickname: user.nickname,
-    //   });
-    // } else {
-    //   this.io.to(client.id).emit('verify-bingo', {
-    //     bingo: false,
-    //     nickname: user.nickname,
-    //     score: user.score - 1,
-    //   });
+          clearInterval(this.roomUserGateway.rooms[i].interval);
+          clearInterval(this.roomUserGateway.rooms[i].ballCounterInterval);
+          this.roomUserGateway.rooms[i].ballCounter = 0;
+        }
+      }
 
-    //   this.io.to(client.id).emit('button-bingo', false);
+      this.io.to(client.id).emit('verify-bingo', {
+        bingo: true,
+        nickname: user.nickname,
+        score: user.score + 1,
+      });
 
-    //   for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
-    //     if (this.roomUserGateway.rooms[i].id === roomId) {
-    //       for (let x = 0; x < this.roomUserGateway.rooms[i].users.length; x++) {
-    //         if (this.roomUserGateway.rooms[i].users[x].id === userId) {
-    //           this.roomUserGateway.rooms[i].users[x].punishment = true;
+      client.to(roomId).emit('user-made-point', {
+        nickname: user.nickname,
+      });
+    } else {
+      this.io.to(client.id).emit('verify-bingo', {
+        bingo: false,
+        nickname: user.nickname,
+        score: user.score - 1,
+      });
 
-    //           const timer: number = +(roomWhithUser.ballTime + '000') * 5;
+      this.io.to(client.id).emit('button-bingo', false);
 
-    //           setTimeout(() => {
-    //             this.roomUserGateway.rooms[i].users[x].punishment = false;
-    //             this.io
-    //               .to(this.roomUserGateway.rooms[i].users[x].clientId)
-    //               .emit('button-bingo', true);
-    //           }, timer);
-    //           return;
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
+      for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
+        if (this.roomUserGateway.rooms[i].id === roomId) {
+          for (let x = 0; x < this.roomUserGateway.rooms[i].users.length; x++) {
+            if (this.roomUserGateway.rooms[i].users[x].id === userId) {
+              this.roomUserGateway.rooms[i].users[x].punishment = true;
+
+              const timer: number = +(roomWhithUser.ballTime + '000') * 5;
+
+              setTimeout(() => {
+                this.roomUserGateway.rooms[i].users[x].punishment = false;
+                this.io
+                  .to(this.roomUserGateway.rooms[i].users[x].clientId)
+                  .emit('button-bingo', true);
+              }, timer);
+              return;
+            }
+          }
+        }
+      }
+    }
   }
 
   @SubscribeMessage('chat-msg')
   chat(@ConnectedSocket() client: Socket, @MessageBody() payload: ChatMessage) {
-    const { userId, roomId, message } = payload;
-
     this.chatGateway.saveMessageToRoom(payload);
   }
 
@@ -241,7 +262,7 @@ export class Gateway
 
     client.join(roomId);
 
-    // console.log(roomWhithUser);
+    console.log('roooooom', roomWhithUser);
   }
 
   async userJoinARoom(userId: string, roomId: string, client: Socket) {
@@ -277,6 +298,8 @@ export class Gateway
       throw new NotFoundException(`Room with ID ${roomId} not found`);
     }
 
+    const round = room.rounds[room.rounds.length - 1];
+
     const user: UserSocket = room.users.find((user) => user.id === userId);
 
     this.changeUserClientId(userId, roomId, client.id);
@@ -293,15 +316,15 @@ export class Gateway
       if (user.host) {
         this.io.to(client.id).emit('button-start', false);
       }
-      // const ballAndKey: DrawnNumberAndKey =
-      //   this.ballsGateway.checkNumberAndReturnKeyAndNumber(
-      //     room.drawnNumbers[room.ballCounter - 1],
-      //   );
+      const ballAndKey: DrawnNumberAndKey =
+        this.ballsGateway.checkNumberAndReturnKeyAndNumber(
+          round.drawnNumbers[room.ballCounter - 1],
+        );
 
-      // this.io.to(client.id).emit('user-reconnect', {
-      //   ballAndKey: ballAndKey,
-      //   lastSixBalls: room.lastSixBalls,
-      // });
+      this.io.to(client.id).emit('user-reconnect', {
+        ballAndKey: ballAndKey,
+        lastSixBalls: room.lastSixBalls,
+      });
     } else {
       this.io.to(client.id).emit('button-bingo', false);
 

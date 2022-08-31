@@ -35,6 +35,12 @@ export class RoomUserGateway {
             select: {
               id: true,
               ballTime: true,
+              rounds: {
+                select: {
+                  id: true,
+                  drawnNumbers: true,
+                },
+              },
             },
           },
           user: {
@@ -65,6 +71,7 @@ export class RoomUserGateway {
       ballCounter: 0,
       lastSixBalls: [],
       messages: [],
+      rounds: [],
       users: [
         {
           clientId: clientId,
