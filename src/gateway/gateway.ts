@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
@@ -197,7 +202,7 @@ export class Gateway
       for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
         if (this.roomUserGateway.rooms[i].id === roomId) {
           for (let x = 0; x < this.roomUserGateway.rooms[i].users.length; x++) {
-            if (this.roomUserGateway.rooms[i].users[x].id === user.id) {
+            if (this.roomUserGateway.rooms[i].users[x].id === userId) {
               this.roomUserGateway.rooms[i].users[x].punishment = true;
 
               const timer: number = +(roomWhithUser.ballTime + '000') * 5;
@@ -242,6 +247,7 @@ export class Gateway
     const user = await this.roomUserGateway.findUserById(userId);
 
     this.roomUserGateway.saveAUserInTheRoom(user, roomId);
+    this.changeUserClientId(userId, roomId, client.id);
 
     const room = this.roomUserGateway.rooms.find((room) => room.id === roomId);
 
@@ -267,7 +273,7 @@ export class Gateway
 
     if (!room) {
       console.log(`Room with ID ${roomId} not found`);
-      return;
+      throw new NotFoundException(`Room with ID ${roomId} not found`);
     }
 
     const user: UserSocket = room.users.find((user) => user.id === userId);
