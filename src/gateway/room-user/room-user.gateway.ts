@@ -88,11 +88,11 @@ export class RoomUserGateway {
   }
 
   saveAUserInTheRoom(user: UserSocket, roomId: string) {
-    for (let i = 0; i < this.rooms.length; i++) {
-      if (this.rooms[i].id === roomId) {
+    this.rooms.forEach((room, i) => {
+      if (room.id === roomId) {
         this.rooms[i].users.push(user);
       }
-    }
+    });
   }
 
   async findUserById(userId: string): Promise<UserSocket> {
@@ -116,5 +116,20 @@ export class RoomUserGateway {
     notFoundError(user, `user with this id: (${userId})`);
 
     return user;
+  }
+
+  changeUserClientId(userId: string, roomId: string, clientId: string): string {
+    for (let i = 0; i < this.rooms.length; i++) {
+      if (this.rooms[i].id === roomId) {
+        for (let x = 0; x < this.rooms[i].users.length; x++) {
+          if (this.rooms[i].users[x].id === userId) {
+            const clientID: string = (this.rooms[i].users[x].clientId =
+              clientId);
+
+            return clientID;
+          }
+        }
+      }
+    }
   }
 }

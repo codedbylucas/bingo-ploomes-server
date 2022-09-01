@@ -27,7 +27,7 @@ import { RoomSocket } from './types/room-socket.type';
 import { UserSocket } from './types/user-socket.type';
 
 @Injectable()
-@WebSocketGateway({
+@WebSocketGateway(80, {
   cors: true,
   serveClient: false,
   pingInterval: 10000,
@@ -59,7 +59,18 @@ export class Gateway
   afterInit(server: any) {}
 
   handleDisconnect(client: Socket) {
-    console.log(`client disconnect: ${client.id}`);
+    // this.roomUserGateway.rooms.forEach((room, indexRoom) => {
+    //   this.roomUserGateway.rooms[indexRoom].users.forEach((user, indexUser) => {
+    //     if (user.clientId === client.id) {
+    //       console.log(this.roomUserGateway.rooms[indexRoom].users);
+    //       this.roomUserGateway.rooms[indexRoom].users.splice(indexUser, 1);
+    //       console.log(this.roomUserGateway.rooms[indexRoom].users);
+    //       this.io
+    //         .to(room.id)
+    //         .emit('new-user', this.roomUserGateway.rooms[indexRoom].users);
+    //     }
+    //   });
+    // });
   }
 
   @SubscribeMessage('create-room-and-user')
@@ -98,8 +109,8 @@ export class Gateway
 
     const timer: number = +(roomWhithUser.ballTime + '000');
 
-    for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
-      if (this.roomUserGateway.rooms[i].id === roomId) {
+    this.roomUserGateway.rooms.forEach((room, i) => {
+      if (room.id === roomId) {
         this.roomUserGateway.rooms[i].status = true;
 
         this.ballsGateway.emitNewBall(roomWhithUser.drawnNumbers, roomId);
@@ -108,17 +119,17 @@ export class Gateway
         }, timer);
 
         this.ballsGateway.ballCounterIntervalAndPushLastSixBalls(
-          roomWhithUser.drawnNumbers,
+          room.drawnNumbers,
           i,
         );
         this.roomUserGateway.rooms[i].ballCounterInterval = setInterval(() => {
           this.ballsGateway.ballCounterIntervalAndPushLastSixBalls(
-            roomWhithUser.drawnNumbers,
+            room.drawnNumbers,
             i,
           );
         }, timer);
       }
-    }
+    });
 
     this.io.to(roomId).emit('button-bingo', true);
   }
@@ -127,7 +138,7 @@ export class Gateway
   async checkBingo(
     @ConnectedSocket() client: Socket,
     @MessageBody() roomAndUser: RoomIdUserId,
-  ) {
+  ): Promise<void> {
     const { userId, roomId } = roomAndUser;
 
     const roomWhithUser: RoomSocket =
@@ -173,13 +184,13 @@ export class Gateway
       checkReverseDiagonal ||
       checkVerticalBingo
     ) {
-      for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
-        if (this.roomUserGateway.rooms[i].id === roomId) {
+      this.roomUserGateway.rooms.forEach((room, i) => {
+        if (room.id === roomId) {
           clearInterval(this.roomUserGateway.rooms[i].interval);
           clearInterval(this.roomUserGateway.rooms[i].ballCounterInterval);
           this.roomUserGateway.rooms[i].ballCounter = 0;
         }
-      }
+      });
 
       this.io.to(client.id).emit('verify-bingo', {
         bingo: true,
@@ -199,32 +210,30 @@ export class Gateway
 
       this.io.to(client.id).emit('button-bingo', false);
 
-      for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
-        if (this.roomUserGateway.rooms[i].id === roomId) {
-          for (let x = 0; x < this.roomUserGateway.rooms[i].users.length; x++) {
-            if (this.roomUserGateway.rooms[i].users[x].id === userId) {
-              this.roomUserGateway.rooms[i].users[x].punishment = true;
+      this.roomUserGateway.rooms.forEach((room, rI) => {
+        if (room.id === roomId) {
+          room.users.forEach((user, uI) => {
+            if (user.id === userId) {
+              this.roomUserGateway.rooms[rI].users[uI].punishment = true;
 
               const timer: number = +(roomWhithUser.ballTime + '000') * 5;
 
               setTimeout(() => {
-                this.roomUserGateway.rooms[i].users[x].punishment = false;
+                this.roomUserGateway.rooms[rI].users[uI].punishment = false;
                 this.io
-                  .to(this.roomUserGateway.rooms[i].users[x].clientId)
+                  .to(this.roomUserGateway.rooms[rI].users[uI].clientId)
                   .emit('button-bingo', true);
               }, timer);
               return;
             }
-          }
+          });
         }
-      }
+      });
     }
   }
 
   @SubscribeMessage('chat-msg')
-  chat(@ConnectedSocket() client: Socket, @MessageBody() payload: ChatMessage) {
-    const { userId, roomId, message } = payload;
-
+  chat(@MessageBody() payload: ChatMessage): void {
     this.chatGateway.saveMessageToRoom(payload);
   }
 
@@ -232,22 +241,24 @@ export class Gateway
     userId: string,
     roomId: string,
     client: Socket,
-  ) {
+  ): Promise<void> {
     const roomWhithUser: RoomSocket =
       await this.roomUserGateway.findRoomAndUser(userId, roomId, client.id);
 
     this.roomUserGateway.createRoomAndUserOnSocket(roomWhithUser);
 
     client.join(roomId);
-
-    // console.log(roomWhithUser);
   }
 
-  async userJoinARoom(userId: string, roomId: string, client: Socket) {
+  async userJoinARoom(
+    userId: string,
+    roomId: string,
+    client: Socket,
+  ): Promise<void> {
     const user = await this.roomUserGateway.findUserById(userId);
 
     this.roomUserGateway.saveAUserInTheRoom(user, roomId);
-    this.changeUserClientId(userId, roomId, client.id);
+    this.roomUserGateway.changeUserClientId(userId, roomId, client.id);
 
     const room = this.roomUserGateway.rooms.find((room) => room.id === roomId);
 
@@ -259,14 +270,23 @@ export class Gateway
       this.io.to(roomId).emit('button-bingo', false);
     }
 
+    this.io.to(client.id).emit('new-message', room.messages);
     this.io.to(roomId).emit('new-user', room.users);
-
-    if (room.messages.length > 0) {
-      this.io.to(client.id).emit('new-message', room.messages);
+    if (room.status) {
+      const ballAndKey: DrawnNumberAndKey =
+        this.ballsGateway.checkNumberAndReturnKeyAndNumber(
+          room.drawnNumbers[room.ballCounter - 1],
+        );
+      this.io.to(client.id).emit('user-reconnect', {
+        ballAndKey: ballAndKey,
+        lastSixBalls: room.lastSixBalls,
+      });
     }
+
+    this.io.to(client.id).emit('new-message', room.messages);
   }
 
-  userReconnect(userId: string, roomId: string, client: Socket) {
+  userReconnect(userId: string, roomId: string, client: Socket): void {
     const room: RoomSocket = this.roomUserGateway.rooms.find(
       (room) => room.id === roomId,
     );
@@ -278,7 +298,7 @@ export class Gateway
 
     const user: UserSocket = room.users.find((user) => user.id === userId);
 
-    this.changeUserClientId(userId, roomId, client.id);
+    this.roomUserGateway.changeUserClientId(userId, roomId, client.id);
 
     client.join(roomId);
 
@@ -306,22 +326,6 @@ export class Gateway
 
       if (user.host) {
         this.io.to(client.id).emit('button-start', true);
-      }
-    }
-  }
-
-  changeUserClientId(userId: string, roomId: string, clientId: string): string {
-    for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
-      if (this.roomUserGateway.rooms[i].id === roomId) {
-        for (let x = 0; x < this.roomUserGateway.rooms[i].users.length; x++) {
-          if (this.roomUserGateway.rooms[i].users[x].id === userId) {
-            const clientID: string = (this.roomUserGateway.rooms[i].users[
-              x
-            ].clientId = clientId);
-
-            return clientID;
-          }
-        }
       }
     }
   }

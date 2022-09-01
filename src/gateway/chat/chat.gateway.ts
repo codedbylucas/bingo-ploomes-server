@@ -12,27 +12,25 @@ export class ChatGateway {
     private readonly roomAndUser: RoomUserGateway,
   ) {}
 
-  saveMessageToRoom(payload: ChatMessage) {
+  saveMessageToRoom(payload: ChatMessage): void {
     const { userId, roomId, message } = payload;
-    console.log(payload);
 
-    for (let i = 0; i < this.roomAndUser.rooms.length; i++) {
-      if (this.roomAndUser.rooms[i].id === roomId) {
-        const user = this.roomAndUser.rooms[i].users.find(
-          (user) => user.id === userId,
-        );
-
+    this.roomAndUser.rooms.forEach((room, rI) => {
+      if (room.id === roomId) {
+        const user = room.users.find((user) => user.id === userId);
         const text: UserMessage = {
           id: userId,
           nickname: user.nickname,
           message: message,
         };
 
-        this.roomAndUser.rooms[i].messages.push(text);
+        this.roomAndUser.rooms[rI].messages.push(text);
 
-        this.gateway.io.to(roomId).emit('new-message', this.roomAndUser.rooms[i].messages);
+        this.gateway.io
+          .to(roomId)
+          .emit('new-message', this.roomAndUser.rooms[rI].messages);
         return;
       }
-    }
+    });
   }
 }

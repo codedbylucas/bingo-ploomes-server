@@ -13,9 +13,9 @@ export class BallsGateway {
   ) {}
 
   emitNewBall(drawnNumbers: number[], roomId: string) {
-    for (let i = 0; i < this.roomUserGateway.rooms.length; i++) {
-      if (this.roomUserGateway.rooms[i].id === roomId) {
-        if (this.roomUserGateway.rooms[i].ballCounter === 75) {
+    this.roomUserGateway.rooms.forEach((room, i) => {
+      if (room.id === roomId) {
+        if (room.ballCounter === 75) {
           this.roomUserGateway.rooms[i].ballCounter = 0;
           clearInterval(this.roomUserGateway.rooms[i].interval);
           clearInterval(this.roomUserGateway.rooms[i].ballCounterInterval);
@@ -32,7 +32,7 @@ export class BallsGateway {
           });
         }
       }
-    }
+    });
   }
 
   ballCounterIntervalAndPushLastSixBalls(
