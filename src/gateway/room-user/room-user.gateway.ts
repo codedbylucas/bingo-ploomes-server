@@ -6,6 +6,7 @@ import { serverError } from 'src/utils/server-error.util';
 import { Gateway } from '../gateway';
 import { RoomSocket } from '../types/room-socket.type';
 import { UserSocket } from '../types/user-socket.type';
+import { UserOnline } from './types/user-online.type';
 
 @Injectable()
 export class RoomUserGateway {
@@ -67,6 +68,7 @@ export class RoomUserGateway {
       ballCounter: 0,
       lastSixBalls: [],
       messages: [],
+      onlineUsers: [],
       users: [
         {
           clientId: clientId,
@@ -85,6 +87,7 @@ export class RoomUserGateway {
 
   createRoomAndUserOnSocket(roomAndUser: RoomSocket): void {
     this.rooms.push(roomAndUser);
+    
   }
 
   saveAUserInTheRoom(user: UserSocket, roomId: string) {
@@ -131,5 +134,17 @@ export class RoomUserGateway {
         }
       }
     }
+  }
+
+  saveNewUserOnline(user: UserOnline, roomId: string): void {
+    this.rooms.forEach((room, i) => {
+      if (room.id === roomId) {
+        this.rooms[i].onlineUsers.push({
+          id: user.id,
+          clientId: user.clientId,
+          nickname: user.nickname,
+        });
+      }
+    });
   }
 }

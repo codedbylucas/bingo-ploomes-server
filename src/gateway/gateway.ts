@@ -53,24 +53,31 @@ export class Gateway
   public io: Server;
 
   handleConnection(client: Socket) {
-    console.log(`client connect: ${client.id}`);
+    // console.log(`client connect: ${client.id}`);
   }
 
   afterInit(server: any) {}
 
   handleDisconnect(client: Socket) {
-    // this.roomUserGateway.rooms.forEach((room, indexRoom) => {
-    //   this.roomUserGateway.rooms[indexRoom].users.forEach((user, indexUser) => {
-    //     if (user.clientId === client.id) {
-    //       console.log(this.roomUserGateway.rooms[indexRoom].users);
-    //       this.roomUserGateway.rooms[indexRoom].users.splice(indexUser, 1);
-    //       console.log(this.roomUserGateway.rooms[indexRoom].users);
-    //       this.io
-    //         .to(room.id)
-    //         .emit('new-user', this.roomUserGateway.rooms[indexRoom].users);
-    //     }
-    //   });
-    // });
+    this.roomUserGateway.rooms.forEach((room, indexRoom) => {
+      this.roomUserGateway.rooms[indexRoom].onlineUsers.forEach(
+        (user, indexUser) => {
+          if (user.clientId === client.id) {
+            this.roomUserGateway.rooms[indexRoom].onlineUsers.splice(
+              indexUser,
+              1,
+            );
+
+            this.io
+              .to(room.id)
+              .emit(
+                'new-user',
+                this.roomUserGateway.rooms[indexRoom].onlineUsers,
+              );
+          }
+        },
+      );
+    });
   }
 
   @SubscribeMessage('create-room-and-user')
@@ -247,6 +254,15 @@ export class Gateway
 
     this.roomUserGateway.createRoomAndUserOnSocket(roomWhithUser);
 
+    this.roomUserGateway.saveNewUserOnline(
+      {
+        id: roomWhithUser.users[0].id,
+        clientId: client.id,
+        nickname: roomWhithUser.users[0].nickname,
+      },
+      roomId,
+    );
+
     client.join(roomId);
   }
 
@@ -258,6 +274,11 @@ export class Gateway
     const user = await this.roomUserGateway.findUserById(userId);
 
     this.roomUserGateway.saveAUserInTheRoom(user, roomId);
+    this.roomUserGateway.saveNewUserOnline(
+      { id: user.id, clientId: client.id, nickname: user.nickname },
+      roomId,
+    );
+
     this.roomUserGateway.changeUserClientId(userId, roomId, client.id);
 
     const room = this.roomUserGateway.rooms.find((room) => room.id === roomId);
@@ -271,7 +292,7 @@ export class Gateway
     }
 
     this.io.to(client.id).emit('new-message', room.messages);
-    this.io.to(roomId).emit('new-user', room.users);
+    this.io.to(roomId).emit('new-user', room.onlineUsers);
     if (room.status) {
       const ballAndKey: DrawnNumberAndKey =
         this.ballsGateway.checkNumberAndReturnKeyAndNumber(
@@ -299,10 +320,14 @@ export class Gateway
     const user: UserSocket = room.users.find((user) => user.id === userId);
 
     this.roomUserGateway.changeUserClientId(userId, roomId, client.id);
+    this.roomUserGateway.saveNewUserOnline(
+      { id: user.id, clientId: client.id, nickname: user.nickname },
+      roomId,
+    );
 
     client.join(roomId);
 
-    this.io.to(roomId).emit('new-user', room.users);
+    this.io.to(roomId).emit('new-user', room.onlineUsers);
     this.io.to(client.id).emit('new-message', room.messages);
 
     if (room.status) {
