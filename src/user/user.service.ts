@@ -4,6 +4,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { RoomUserService } from 'src/room-user/room-user.service';
 import { UserConnectedToRoom } from 'src/room-user/types/user-connected-to-room.type';
 import { UserToRoom } from 'src/room-user/types/user-to-room.type';
+import { Room } from 'src/room/entities/room.entity';
+import { RoomService } from 'src/room/room.service';
 import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
 import { JoinUserRoom } from './dto/join-user-room.dto';
@@ -17,6 +19,8 @@ export class UserService {
 
     @Inject(forwardRef(() => RoomUserService))
     private readonly roomUserService: RoomUserService,
+
+    private readonly roomService: RoomService,
   ) {}
 
   private userSelect = {
@@ -47,6 +51,8 @@ export class UserService {
   async joinUserWithTheRoomAndCreateTheirCards(
     joinUserRoom: JoinUserRoom,
   ): Promise<UserConnectedToRoom> {
+    await this.roomService.checkIfTheRoomIsFull(joinUserRoom.roomId)
+
     const user: User = await this.createUser(joinUserRoom.nickname);
 
     const userToRoom: UserToRoom = {

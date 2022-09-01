@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { UserAndRoomAuth } from 'src/auth/types/user-id-auth.type';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -180,5 +185,21 @@ export class RoomService {
     };
 
     return roomWithUsersCardsAndUserSelf;
+  }
+
+  async checkIfTheRoomIsFull(roomId: string): Promise<void> {
+    const room = await this.prisma.room
+      .findUnique({
+        where: { id: roomId },
+        select: {
+          users: true,
+        },
+      })
+      .catch(serverError);
+
+    console.log(room.users);
+    if (room.users.length === 10) {
+      throw new UnauthorizedException(`Crowded room`);
+    }
   }
 }
