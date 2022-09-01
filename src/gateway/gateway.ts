@@ -27,7 +27,7 @@ import { RoomSocket } from './types/room-socket.type';
 import { UserSocket } from './types/user-socket.type';
 
 @Injectable()
-@WebSocketGateway(80, {
+@WebSocketGateway({
   cors: true,
   serveClient: false,
   pingInterval: 10000,
