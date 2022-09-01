@@ -6,6 +6,7 @@ import { serverError } from 'src/utils/server-error.util';
 import { Gateway } from '../gateway';
 import { RoomSocket } from '../types/room-socket.type';
 import { UserSocket } from '../types/user-socket.type';
+import { UserOnline } from './types/user-online.type';
 
 @Injectable()
 export class RoomUserGateway {
@@ -67,6 +68,7 @@ export class RoomUserGateway {
       ballCounter: 0,
       lastSixBalls: [],
       messages: [],
+      onlineUsers: [],
       users: [
         {
           clientId: clientId,
@@ -85,14 +87,15 @@ export class RoomUserGateway {
 
   createRoomAndUserOnSocket(roomAndUser: RoomSocket): void {
     this.rooms.push(roomAndUser);
+    
   }
 
   saveAUserInTheRoom(user: UserSocket, roomId: string) {
-    for (let i = 0; i < this.rooms.length; i++) {
-      if (this.rooms[i].id === roomId) {
+    this.rooms.forEach((room, i) => {
+      if (room.id === roomId) {
         this.rooms[i].users.push(user);
       }
-    }
+    });
   }
 
   async findUserById(userId: string): Promise<UserSocket> {
@@ -116,5 +119,32 @@ export class RoomUserGateway {
     notFoundError(user, `user with this id: (${userId})`);
 
     return user;
+  }
+
+  changeUserClientId(userId: string, roomId: string, clientId: string): string {
+    for (let i = 0; i < this.rooms.length; i++) {
+      if (this.rooms[i].id === roomId) {
+        for (let x = 0; x < this.rooms[i].users.length; x++) {
+          if (this.rooms[i].users[x].id === userId) {
+            const clientID: string = (this.rooms[i].users[x].clientId =
+              clientId);
+
+            return clientID;
+          }
+        }
+      }
+    }
+  }
+
+  saveNewUserOnline(user: UserOnline, roomId: string): void {
+    this.rooms.forEach((room, i) => {
+      if (room.id === roomId) {
+        this.rooms[i].onlineUsers.push({
+          id: user.id,
+          clientId: user.clientId,
+          nickname: user.nickname,
+        });
+      }
+    });
   }
 }
