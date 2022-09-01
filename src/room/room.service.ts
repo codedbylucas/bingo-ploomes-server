@@ -197,7 +197,8 @@ export class RoomService {
       })
       .catch(serverError);
 
-    console.log(room.users);
+    notFoundError(room, `room with this id: (${roomId})`);
+
     if (room.users.length === 10) {
       throw new UnauthorizedException(`Crowded room`);
     }
