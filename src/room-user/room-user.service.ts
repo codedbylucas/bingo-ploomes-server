@@ -66,6 +66,7 @@ export class RoomUserService {
                 nickname: true,
                 score: true,
                 host: true,
+                imageLink: true,
               },
             },
           },
@@ -104,5 +105,26 @@ export class RoomUserService {
     });
 
     return roomUser;
+  }
+
+  async searchAllUsersInTheRoom(roomId: string) {
+    const usersImage = await this.prisma.room
+      .findUnique({
+        where: { id: roomId },
+        select: {
+          users: {
+            select: {
+              user: {
+                select: {
+                  imageLink: true,
+                },
+              },
+            },
+          },
+        },
+      })
+      .catch(serverError);
+
+    return usersImage;
   }
 }
