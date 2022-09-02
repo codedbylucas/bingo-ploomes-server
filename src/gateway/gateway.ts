@@ -259,6 +259,7 @@ export class Gateway
         id: roomWhithUser.users[0].id,
         clientId: client.id,
         nickname: roomWhithUser.users[0].nickname,
+        imageLink: roomWhithUser.users[0].imageLink,
       },
       roomId,
     );
@@ -275,7 +276,12 @@ export class Gateway
 
     this.roomUserGateway.saveAUserInTheRoom(user, roomId);
     this.roomUserGateway.saveNewUserOnline(
-      { id: user.id, clientId: client.id, nickname: user.nickname },
+      {
+        id: user.id,
+        clientId: client.id,
+        nickname: user.nickname,
+        imageLink: user.imageLink,
+      },
       roomId,
     );
 
@@ -321,7 +327,12 @@ export class Gateway
 
     this.roomUserGateway.changeUserClientId(userId, roomId, client.id);
     this.roomUserGateway.saveNewUserOnline(
-      { id: user.id, clientId: client.id, nickname: user.nickname },
+      {
+        id: user.id,
+        clientId: client.id,
+        nickname: user.nickname,
+        imageLink: user.imageLink,
+      },
       roomId,
     );
 

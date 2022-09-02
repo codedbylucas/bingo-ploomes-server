@@ -6,6 +6,7 @@ export type UserWhithSelf = {
   score: number;
   isSelf: boolean;
   host: boolean,
+  imageLink: string;
   cards: [
     {
       id: string;

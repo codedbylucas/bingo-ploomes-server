@@ -45,6 +45,7 @@ export class RoomUserGateway {
               nickname: true,
               score: true,
               host: true,
+              imageLink: true,
               cards: {
                 select: {
                   numbers: true,
@@ -74,6 +75,7 @@ export class RoomUserGateway {
           clientId: clientId,
           id: userRoom.user.id,
           nickname: userRoom.user.nickname,
+          imageLink: userRoom.user.imageLink,
           score: userRoom.user.score,
           cards: userRoom.user.cards,
           host: userRoom.user.host,
@@ -87,7 +89,6 @@ export class RoomUserGateway {
 
   createRoomAndUserOnSocket(roomAndUser: RoomSocket): void {
     this.rooms.push(roomAndUser);
-    
   }
 
   saveAUserInTheRoom(user: UserSocket, roomId: string) {
@@ -107,6 +108,7 @@ export class RoomUserGateway {
           nickname: true,
           score: true,
           host: true,
+          imageLink: true,
           cards: {
             select: {
               numbers: true,
@@ -143,6 +145,7 @@ export class RoomUserGateway {
           id: user.id,
           clientId: user.clientId,
           nickname: user.nickname,
+          imageLink: user.imageLink,
         });
       }
     });

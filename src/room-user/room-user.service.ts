@@ -91,6 +91,11 @@ export class RoomUserService {
 
     const user: User = await this.userService.createUser(nickname);
 
+    const imageLink = this.userService.allUserImages();
+
+    const indexRandom: number = Math.floor(Math.random() * (10 - 0)) + 0;
+    await this.userService.updateUserImage(user.id, imageLink[indexRandom]);
+
     await this.userService.setUserAsHost(user.id);
 
     const room: Room = await this.roomService.createRoom({

@@ -37,7 +37,6 @@ export class UserService {
     const data: Prisma.UserCreateInput = {
       nickname,
       score: 0,
-      imageLink: '2',
     };
 
     const user: User = await this.prisma.user
@@ -53,7 +52,7 @@ export class UserService {
   async joinUserWithTheRoomAndCreateTheirCards(
     joinUserRoom: JoinUserRoom,
   ): Promise<UserConnectedToRoom> {
-    await this.roomService.checkIfTheRoomIsFull(joinUserRoom.roomId)
+    await this.roomService.checkIfTheRoomIsFull(joinUserRoom.roomId);
 
     const user: User = await this.createUser(joinUserRoom.nickname);
     const imageLink = await this.searchForRandomImage(joinUserRoom.roomId);
@@ -156,30 +155,18 @@ export class UserService {
   }
 
   async searchForRandomImage(roomId: string): Promise<string> {
-    const images: string[] = [
-      'https://i.imgur.com/s655FaJ.jpg',
-      'https://i.imgur.com/Q0K9W3A.jpg',
-      'https://i.imgur.com/5UBJHSO.jpg',
-      'https://i.imgur.com/35WrTk2.jpg',
-      'https://i.imgur.com/goeOQTB.jpg',
-      'https://i.imgur.com/xFYVqDi.jpg',
-      'https://i.imgur.com/JH9ZmjI.jpg',
-      'https://i.imgur.com/rxP6igw.jpg',
-      'https://i.imgur.com/mu6KZ2t.jpg',
-      'https://i.imgur.com/n6FTA7s.jpg',
-    ];
+    const images: string[] = this.allUserImages();
 
     const usersImage = await this.roomUserService.searchAllUsersInTheRoom(
       roomId,
     );
-    const onlyImages = usersImage.users.map((user) => user.user.imageLink);
 
-    console.log(onlyImages);
+    const onlyImages = usersImage.users.map((user) => user.user.imageLink);
 
     const imageUser = [];
 
     while (imageUser.length === 0) {
-      const indexRandom: number = Math.floor(Math.random() * (11 - 1)) + 1;
+      const indexRandom: number = Math.floor(Math.random() * (10 - 0)) + 0;
       if (!onlyImages.includes(images[indexRandom])) {
         imageUser.push(images[indexRandom]);
       }
@@ -197,5 +184,20 @@ export class UserService {
         },
       })
       .catch(serverError);
+  }
+
+  allUserImages(): string[] {
+    return [
+      'https://i.imgur.com/s655FaJ.jpg',
+      'https://i.imgur.com/Q0K9W3A.jpg',
+      'https://i.imgur.com/5UBJHSO.jpg',
+      'https://i.imgur.com/35WrTk2.jpg',
+      'https://i.imgur.com/goeOQTB.jpg',
+      'https://i.imgur.com/xFYVqDi.jpg',
+      'https://i.imgur.com/JH9ZmjI.jpg',
+      'https://i.imgur.com/rxP6igw.jpg',
+      'https://i.imgur.com/mu6KZ2t.jpg',
+      'https://i.imgur.com/n6FTA7s.jpg',
+    ];
   }
 }
