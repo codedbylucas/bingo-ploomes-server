@@ -23,11 +23,11 @@ export class RoomController {
     return this.roomService.findSingleRoomWhithUsersAndCards(userAndRoom);
   }
 
-  @Get('/all')
-  @ApiOperation({
-    summary: `Search all rooms`,
-  })
-  findAllRooms() {
-    return this.roomService.findAllRooms();
-  }
+  // @Get('/all')
+  // @ApiOperation({
+  //   summary: `Search all rooms`,
+  // })
+  // findAllRooms() {
+  //   return this.roomService.findAllRooms();
+  // }
 }
