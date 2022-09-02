@@ -5,5 +5,6 @@ export type UserSocket = {
   score: number;
   cards: any;
   host: boolean;
+  imageLink: string;
   punishment?: boolean;
 };

@@ -5,9 +5,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { transformDocument } from '@prisma/client/runtime';
 import { UserAndRoomAuth } from 'src/auth/types/user-id-auth.type';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
+import { handleError } from 'src/utils/handle-error.util';
 import { notFoundError } from 'src/utils/not-found.util';
 import { serverError } from 'src/utils/server-error.util';
 import { Room } from './entities/room.entity';
@@ -86,6 +88,7 @@ export class RoomService {
                   nickname: true,
                   score: true,
                   host: true,
+                  imageLink: true,
                   cards: {
                     select: {
                       id: true,
@@ -158,6 +161,7 @@ export class RoomService {
           nickname: user.user.nickname,
           score: user.user.score,
           isSelf: true,
+          imageLink: user.user.imageLink,
           host: user.user.host,
           cards: user.user.cards,
         };
@@ -167,6 +171,7 @@ export class RoomService {
           nickname: user.user.nickname,
           score: user.user.score,
           isSelf: false,
+          imageLink: user.user.imageLink,
           host: user.user.host,
           cards: user.user.cards,
         };

@@ -66,6 +66,7 @@ export class RoomUserService {
                 nickname: true,
                 score: true,
                 host: true,
+                imageLink: true,
               },
             },
           },
@@ -90,6 +91,11 @@ export class RoomUserService {
 
     const user: User = await this.userService.createUser(nickname);
 
+    const imageLink = this.userService.allUserImages();
+
+    const indexRandom: number = Math.floor(Math.random() * (10 - 0)) + 0;
+    await this.userService.updateUserImage(user.id, imageLink[indexRandom]);
+
     await this.userService.setUserAsHost(user.id);
 
     const room: Room = await this.roomService.createRoom({
@@ -104,5 +110,26 @@ export class RoomUserService {
     });
 
     return roomUser;
+  }
+
+  async searchAllUsersInTheRoom(roomId: string) {
+    const usersImage = await this.prisma.room
+      .findUnique({
+        where: { id: roomId },
+        select: {
+          users: {
+            select: {
+              user: {
+                select: {
+                  imageLink: true,
+                },
+              },
+            },
+          },
+        },
+      })
+      .catch(serverError);
+
+    return usersImage;
   }
 }

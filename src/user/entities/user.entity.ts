@@ -3,4 +3,5 @@ export class User {
   nickname: string;
   score: number;
   host?: boolean;
+  imageLink?: string;
 }
