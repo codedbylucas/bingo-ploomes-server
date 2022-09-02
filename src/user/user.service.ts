@@ -28,6 +28,7 @@ export class UserService {
     nickname: true,
     score: true,
     host: true,
+    imageLink: true,
   };
 
   async createUser(nickname: string): Promise<User> {
@@ -36,6 +37,7 @@ export class UserService {
     const data: Prisma.UserCreateInput = {
       nickname,
       score: 0,
+      imageLink: '2',
     };
 
     const user: User = await this.prisma.user
@@ -54,6 +56,9 @@ export class UserService {
     await this.roomService.checkIfTheRoomIsFull(joinUserRoom.roomId)
 
     const user: User = await this.createUser(joinUserRoom.nickname);
+    const imageLink = await this.searchForRandomImage(joinUserRoom.roomId);
+
+    await this.updateUserImage(user.id, imageLink);
 
     const userToRoom: UserToRoom = {
       userId: user.id,
@@ -84,6 +89,7 @@ export class UserService {
           id: true,
           nickname: true,
           score: true,
+          imageLink: true,
           cards: { select: { id: true, numbers: true } },
         },
       })
@@ -139,6 +145,7 @@ export class UserService {
           nickname: true,
           score: true,
           host: true,
+          imageLink: true,
         },
       })
       .catch(serverError);
@@ -146,5 +153,49 @@ export class UserService {
     notFoundError(user, `user with this id: (${userId})`);
 
     return user;
+  }
+
+  async searchForRandomImage(roomId: string): Promise<string> {
+    const images: string[] = [
+      'https://i.imgur.com/s655FaJ.jpg',
+      'https://i.imgur.com/Q0K9W3A.jpg',
+      'https://i.imgur.com/5UBJHSO.jpg',
+      'https://i.imgur.com/35WrTk2.jpg',
+      'https://i.imgur.com/goeOQTB.jpg',
+      'https://i.imgur.com/xFYVqDi.jpg',
+      'https://i.imgur.com/JH9ZmjI.jpg',
+      'https://i.imgur.com/rxP6igw.jpg',
+      'https://i.imgur.com/mu6KZ2t.jpg',
+      'https://i.imgur.com/n6FTA7s.jpg',
+    ];
+
+    const usersImage = await this.roomUserService.searchAllUsersInTheRoom(
+      roomId,
+    );
+    const onlyImages = usersImage.users.map((user) => user.user.imageLink);
+
+    console.log(onlyImages);
+
+    const imageUser = [];
+
+    while (imageUser.length === 0) {
+      const indexRandom: number = Math.floor(Math.random() * (11 - 1)) + 1;
+      if (!onlyImages.includes(images[indexRandom])) {
+        imageUser.push(images[indexRandom]);
+      }
+    }
+
+    return imageUser[0];
+  }
+
+  async updateUserImage(userId: string, imageLink: string): Promise<void> {
+    await this.prisma.user
+      .update({
+        where: { id: userId },
+        data: {
+          imageLink,
+        },
+      })
+      .catch(serverError);
   }
 }
