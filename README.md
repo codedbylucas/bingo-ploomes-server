@@ -46,6 +46,6 @@ NodeJs | Typescript | NestJs | React | PostgreSQL | Socket.io
 * **Marcelo Santos** - *Back-end* - [GITHUB](https://github.com/DJMarshallSantos)
 * **Ramon Lopes** - *Front-end* - [GITHUB](https://github.com/RamonMarcelLopes)
 
-## 📄 Licença
+## 📄 Licença 
 
 Este projeto está sob a licença MIT License - veja o arquivo [LICENSE.md](https://github.com/mlucasdev/bingo-ploomes-server/blob/main/LICENSE) para detalhes.
