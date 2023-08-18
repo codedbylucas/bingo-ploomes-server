@@ -28,6 +28,12 @@ Instale todas as dependências:
 npm install
 ```
 
+Gere as tabelas no banco de dados:
+
+```
+npx prisma db push
+```
+
 Rode o projeto em modo desenvolvedor:
 
 ```
