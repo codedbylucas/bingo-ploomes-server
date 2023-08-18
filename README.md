@@ -1,4 +1,4 @@
-# Bingo do G5
+# Bingo
 
 Esse projeto foi desenvolvido para construção de um bingo online multiplayer, com a criação de multiplas salas e chat utilizando WebSocket.
 
